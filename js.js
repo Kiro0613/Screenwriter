@@ -2,7 +2,7 @@ var screenplay = document.getElementById("screenplay");
 var x;
 
 screenplay.addElement = function(){
-    console.log("here");
+    console.log("here1");
     x = this.appendChild(newScreenplayElem());
 }
 
@@ -14,12 +14,13 @@ screenplay.deleteElement = function(){
     }
 }
 
-screenplay.keyPress(){
-
+screenplay.keyPress = function(){
+	console.log("here2");
 }
 
 function newScreenplayElem(){
-    var newElem = document.createElement("textarea");
+    var newElem = document.createElement("div");
+	newElem.contentEditable = true;
     newElem.addEventListener("keydown", parent.keyPress);
 
     return newElem;

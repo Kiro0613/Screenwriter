@@ -17,4 +17,53 @@ textarea{
     border: none;
     font-family: 'Courier New', Courier, monospace;
     resize: none;
+	outline: none;
+}
+
+.page{
+	width: 8.5in;
+	height: 11in;
+	padding-top: 1in;
+	padding-bottom: 1in;
+	background-color: #FFFFFF;
+}
+
+.slug{
+	margin-left: 1.5in;
+	margin-right: 1in;
+	width: 6in;
+	margin-bottom: 12px;
+}
+
+.action{
+	margin-left: 1.5in;
+	margin-right: 1in;
+	width: 6in;
+	margin-bottom: 12px;
+}
+
+.name{
+	margin-left: 4.2in;
+	margin-right: 1in;
+	width: 3.3in;
+}
+
+.parenthetical{
+	margin-left: 3.6in;
+	margin-right: 2.9in;
+	width: 2in;
+}
+
+.dialogue{
+	margin-left: 2.9in;
+	margin-right: 2.3in;
+	width: 3.3in;
+	margin-bottom: 12px;
+}
+
+.transition{
+	margin-left: 6in;
+	margin-right: 1in;
+	width: 1.5in;
+	margin-bottom: 12px;
 }
