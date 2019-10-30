@@ -1,0 +1,20 @@
+body{
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    margin: auto;
+    background-color: #a4c1ff;
+
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 12pt;
+}
+
+h4{
+    margin-bottom: 0%;
+}
+
+textarea{
+    border: none;
+    font-family: 'Courier New', Courier, monospace;
+    resize: none;
+}
