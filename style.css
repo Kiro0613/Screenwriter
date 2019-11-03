@@ -9,8 +9,17 @@ body{
     font-size: 12pt;
 }
 
+.option{
+	padding: 4px;
+	text-align: center;
+}
+
 h4{
-    margin-bottom: 0%;
+    margin: 0%;
+}
+
+button{
+    font-family: 'Courier New', Courier, monospace;
 }
 
 textarea{
@@ -26,44 +35,40 @@ textarea{
 	padding-top: 1in;
 	padding-bottom: 1in;
 	background-color: #FFFFFF;
+	margin: auto;
+	margin-bottom: 24px;
 }
 
 .slug{
-	margin-left: 1.5in;
-	margin-right: 1in;
-	width: 6in;
-	margin-bottom: 12px;
+	padding-left: 1.5in;
+	padding-right: 1in;
+	padding-bottom: 12px;
 }
 
 .action{
-	margin-left: 1.5in;
-	margin-right: 1in;
-	width: 6in;
-	margin-bottom: 12px;
+	padding-left: 1.5in;
+	padding-right: 1in;
+	padding-bottom: 12px;
 }
 
 .name{
-	margin-left: 4.2in;
-	margin-right: 1in;
-	width: 3.3in;
+	padding-left: 4.2in;
+	padding-right: 1in;
 }
 
 .parenthetical{
-	margin-left: 3.6in;
-	margin-right: 2.9in;
-	width: 2in;
+	padding-left: 3.6in;
+	padding-right: 2.9in;
 }
 
 .dialogue{
-	margin-left: 2.9in;
-	margin-right: 2.3in;
-	width: 3.3in;
-	margin-bottom: 12px;
+	padding-left: 2.9in;
+	padding-right: 2.3in;
+	padding-bottom: 12px;
 }
 
 .transition{
-	margin-left: 6in;
-	margin-right: 1in;
-	width: 1.5in;
-	margin-bottom: 12px;
+	padding-left: 6in;
+	padding-right: 1in;
+	padding-bottom: 12px;
 }
