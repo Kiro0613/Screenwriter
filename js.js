@@ -1,99 +1,243 @@
 var screenplay = document.getElementById("screenplay");
-screenplay["code"] = {
-    nodes : [],
-    page : [],
-    activeElem : null,
 
-    addElement : function(){
-        console.log("here1");
-        this.nodes.push(newScreenplayElem());
-        this.page[this.activeElem.page].fillPage();
-    },
-
-    deleteLastElement : function(){
-        console.log(this.nodes.length);
-        if(this.nodes.length <= 1){
-            console.log("Did not delete: Cannot delete last element in script");
-        } else {
-            this.nodes.pop();
-            this.page[this.activeElem.page].fillPage();
-        }
-    },
-
-    createPage : function(){
-        this.page.push(newPage());
-    },
-
-    deletePage : function(){
-        this.page.pop();
-    },
-    
-    keyPress : function(){
-        console.log("here2");
-    },
-
-    updateView : function(){
-        
-    }
+screenplay.addElement = function(elemType, insert){
+	if(elemType == undefined){
+		elemType = 1;
+	}
+	
+	if(insert){
+		this.insertBefore(newScreenplayElem(elemTypes[elemType]), this.activeElem.nextSibling);
+		this.activeElem = this.activeElem.nextSibling;
+		this.activeElem.focus();
+	} else {
+		this.appendChild(newScreenplayElem(elemTypes[elemType]));
+		this.activeElem = this.lastChild;
+		this.activeElem.focus();
+	}
+	
+	return this.activeElem;
 }
 
-function newScreenplayElem(){
-    var newElem = document.createElement("DIV");
+screenplay.deleteLastElement = function(){
+	console.log(this.childElementCount);
+	if(this.childElementCount<= 1){
+		console.log("Did not delete: Cannot delete last element in script");
+	} else {
+		this.removeChild(this.lastElementChild);
+	}
+}
+
+//Sorted by indentation
+elemTypes = [
+	{
+		name : "slug",
+		commonName : "SLUGLINE",
+		lineWidth : 59,
+		index : 0
+	},
+	{
+		name : "action",
+		commonName : "Action",
+		lineWidth : 59,
+		index : 1
+	},
+	{
+		name : "dial",
+		commonName : "Dialogue",
+		lineWidth : 32,
+		index : 2
+	},
+	{
+		name : "paren",
+		commonName : "(parenthetical)",
+		lineWidth : 20,
+		index : 3
+	},
+	{
+		name : "name",
+		commonName : "CHARACTER",
+		lineWidth : 32,
+		index : 4
+	},
+	{
+		name : "trans",
+		commonName : "TRANSITION:",
+		lineWidth : 15,
+		index : 5
+	}
+];
+
+function newScreenplayElem(type){
+    var newElem = document.createElement("TEXTAREA");
+	newElem.elemType = type;
 	newElem.contentEditable = true;
-    newElem.addEventListener("keydown", parent.keyPress);
-    newElem.addEventListener("focus", function(){screenplay.code.activeElem = this});
-	newElem.className = "action";
-    newElem.innerHTML = "Action Element";
-    newElem.page = null;
+	newElem.classList.add("element");
+	newElem.classList.add(type.name);
+    newElem.innerHTML = type.commonName;
+	newElem.lines = [""];
+	
+	newElem.scriptIndex = function(){
+		for(i = 0; i < screenplay.childElementCount; i++){
+			if(screenplay.children[i] == this){return i;}
+		}
+	}
+	
+    newElem.addEventListener("focus", function(){
+		screenplay.activeElem = this;
+		typeSelector.selectedIndex = this.elemType.index;
+	});
+	
+	newElem.onkeydown = function(event){
+		this.splitLines();
+		this.rows = this.lines.length;
+		
+		switch(event.key){
+			case "Tab" :
+				event.preventDefault();
+				this.shiftType(event.shiftKey ? -1 : 1);
+				break;
+			case "Enter" :
+				event.preventDefault();
+				screenplay.addElement(1, true);
+				break;
+			case "ArrowUp":
+				if(this.caret.isOnTop() && this.scriptIndex() != 0){
+					event.preventDefault();
+					screenplay.activeElem = this.previousSibling;
+					screenplay.activeElem.splitLines();
+					screenplay.activeElem.focus();
+					window.getSelection().collapseToStart(screenplay.activeElem);
+				}
+				break;
+			case "ArrowDown":
+				if(this.caret.isOnBottom() && this.scriptIndex() != screenplay.childElementCount - 1){
+					event.preventDefault();
+					screenplay.activeElem = this.nextSibling;
+					screenplay.activeElem.splitLines();
+					screenplay.activeElem.focus();
+					window.getSelection().collapseToStart(screenplay.activeElem);
+				}
+				break;
+			case "Backspace":
+				if(this.caret.pos() == 0 && this.scriptIndex() != 0){
+					event.preventDefault();
+					
+				}
+		}
+	}
+	
+	newElem.onchange = function(){
+		this.splitLines();
+		this.rows = this.lines.length;
+	}
+	
+	newElem.shiftType = function(amount){
+		var newElemIndex = (this.elemType.index + amount) % 6;
+		if(newElemIndex == -1){
+			newElemIndex = 5;
+		}
+		
+		if(this.innerHTML == this.elemType.commonName){
+			this.innerHTML = elemTypes[newElemIndex].commonName;
+		}
+		
+		this.elemType = elemTypes[newElemIndex];
+		this.classList.replace(this.classList[1], elemTypes[newElemIndex].name);
+		typeSelector.selectedIndex = this.elemType.index;
+	}
+	
+	newElem.caret = {
+		pos : function(){
+			return screenplay.activeElem.selectionStart;
+		},
+		posFromEnd : function(){
+			return this.innerHTML.length - this.pos();
+		},
+		isOnTop : function(){
+			screenplay.activeElem.splitLines();
+			return screenplay.activeElem.lines[0].length - this.pos() >= 0;
+		},
+		isOnBottom : function(){
+			screenplay.activeElem.splitLines();
+			elem = screenplay.activeElem;
+			return elem.innerHTML.length - elem.lines[elem.lines.length-1].length <= this.pos();
+		}
+	}
+	
+	newElem.splitLines = function(){
+		var words = this.innerHTML.replace(/([A-z])-([A-z])/g, "$1- $2").split(" ");
+		var lines = [words[0]];
+		for(i = 1, j = 0; i < words.length; i++){
+			if(lines[j].charAt(lines[j].length - 1) == "-"){
+				if(lines[j].length + words[i].length <= this.elemType.lineWidth){
+					lines[j] += words[i]; 
+				} else {
+					//console.log("here 2");
+					j++;
+					lines[j] = words[i];
+				}
+			} else if(lines[j].length + words[i].length + 1 <= this.elemType.lineWidth){
+				//console.log("here 1");
+				lines[j] += (" " + words[i]); 
+			} else {
+				//console.log("here 2");
+				j++;
+				lines[j] = words[i];
+			}
+		}
+		this.lines = lines;
+		this.rows = this.lines.length;
+	}
 
     return newElem;
 }
 
-function newPage(){
-    var newPage = {
-        elem : document.createElement("DIV"),
-        nodes : [],
-        isFull : function(){
-            var x = 0;
-            for(i = 0; i < this.nodes.length; i++){
-                x += this.nodes[i].height;
-            }
-
-            return x > this.height;
-        },
-        fillPage : function(){
-            this.nodes.forEach(function(x){
-                x.page = null;
-            });
-
-            for(i = 0; i < screenplay.code.nodes.length; i++){
-                if(screenplay.code.nodes[i].page == null){
-                    this.nodes.push(screenplay.code.nodes[i]);
-                    screenplay.code.nodes[i].page = 0
-                }
-            }
-
-            for(i = 0; i < this.nodes.length; i++){
-                this.elem.children = null;
-                this.elem.appendChild(this.nodes[i]);
-            }
-            
-        }
-    }
-
-    newPage.elem.className = "page";
-
-    return newPage;
-}
-
 function init(){
-    screenplay.code.nodes[0] = document.getElementById("defaultSlug");
-    screenplay.code.page[0] = newPage();
-    screenplay.code.page[0].elem = document.getElementById("defaultPage");
-    screenplay.code.page[0].fillPage();
-    screenplay.code.activeElem = screenplay.code.nodes[0];
+//	screenplay.addElement(0);
+//	screenplay.activeElem = screenplay.children[0];
+//	screenplay.activeElem.innerHTML = "Patrons chirp at one another and waiters bustle around carrying coffees and pastries. At one of the tables is JAMES, a Matrix-clad thirtysomething with slick-backed hair and a leather coat, pounding away on his laptop.";
+	writeFiller();
 }
 
 document.addEventListener('DOMContentLoaded', function(event) {
-    init();
-  })
+	init();
+})
+
+var typeSelector = document.getElementById("elementTypeSelector");
+typeSelector.onchange = function(){
+	var elem = screenplay.activeElem;
+	elem.classList.replace(elem.classList[1], elemTypes[this.selectedIndex].name);
+}
+
+function writeFiller(){
+	var content = [
+		"FADE IN:",
+		"INT. BARBALOW CAFE - DAY",
+		"Patrons chirp at one another and waiters bustle around carrying coffees and pastries. At one of the tables is JAMES, a Matrix-clad thirtysomething with slick-backed hair and a leather coat, pounding away on his laptop.",
+		"WAITRESS",
+		"(nervous)",
+		"Excuse me, sir? Would you like anything?",
+		"James turns to her and nods with a smug grin. He continues his typing with one hand.",
+		"JAMES",
+		"No, thanks. I'm cool. Say, why don't you get yourself a drink, on me? I should have the money in three, two...",
+		"James's laptop beeps violently and a cash register noise is heard.",
+		"JAMES (cont'd)",
+		"And, done! There we go - I've hacked into the mainframe of the Trustworthy Pioneer Bank and transferred twenty million dollars straight from those corporate bigwigs' accounts into mine. It's okay to be impressed, baby.",
+		"FADE TO:",
+		"EXT. ALLEYWAY - SUNSET",
+		"JAMES drives down the street. He parallel parks next to an abandoned warehouse with a sign reading \"WARNING: NO ILLEGAL ACTIVITY OCCURS HERE. PLEASE LOOK AWAY.\"",
+		"James gets out of his car, fedora pulled low over his head. He walks into the alley and meets two other men, BROCKO and SHIVA.",
+		"BROCKO",
+		"Ya got the goods?"
+  	]
+	
+	var classes = [0, 0, 1, 4, 3, 2, 1, 4, 2, 1, 4, 2, 5, 0, 1, 1, 4, 2];
+	for(i = 0; i < classes.length; i++){
+		screenplay.addElement(classes[i]);
+		screenplay.activeElem.innerHTML = content[i];
+	}
+	
+	for(n = 0; n < screenplay.childElementCount; n++){
+		screenplay.children[n].splitLines();
+	}
+}
