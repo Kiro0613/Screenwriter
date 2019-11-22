@@ -9,11 +9,15 @@ screenplay.addElement = function(elemType, insert){
 		this.insertBefore(newScreenplayElem(elemTypes[elemType]), this.activeElem.nextSibling);
 		this.activeElem = this.activeElem.nextSibling;
 		this.activeElem.focus();
+		//this.activeElem.setSelectionRange(-1, 0)
 	} else {
 		this.appendChild(newScreenplayElem(elemTypes[elemType]));
 		this.activeElem = this.lastChild;
 		this.activeElem.focus();
+		window.getSelection().collapseToEnd(this.activeElem);
 	}
+
+	//this.activeElem.splitLines();
 	
 	return this.activeElem;
 }
@@ -27,6 +31,12 @@ screenplay.deleteLastElement = function(){
 	}
 }
 
+screenplay.fixChildrenHeight = function(){
+	for(k = 0; k < this.childElementCount; k++){
+		this.children[k].splitLines();
+	}
+}
+
 //Sorted by indentation
 elemTypes = [
 	{
@@ -34,32 +44,27 @@ elemTypes = [
 		commonName : "SLUGLINE",
 		lineWidth : 59,
 		index : 0
-	},
-	{
+	}, {
 		name : "action",
 		commonName : "Action",
 		lineWidth : 59,
 		index : 1
-	},
-	{
+	}, {
 		name : "dial",
 		commonName : "Dialogue",
 		lineWidth : 32,
 		index : 2
-	},
-	{
+	}, {
 		name : "paren",
 		commonName : "(parenthetical)",
 		lineWidth : 20,
 		index : 3
-	},
-	{
+	}, {
 		name : "name",
 		commonName : "CHARACTER",
 		lineWidth : 32,
 		index : 4
-	},
-	{
+	}, {
 		name : "trans",
 		commonName : "TRANSITION:",
 		lineWidth : 15,
@@ -83,13 +88,14 @@ function newScreenplayElem(type){
 	}
 	
     newElem.addEventListener("focus", function(){
+		//this.splitLines();
+
 		screenplay.activeElem = this;
 		typeSelector.selectedIndex = this.elemType.index;
 	});
 	
 	newElem.onkeydown = function(event){
 		this.splitLines();
-		this.rows = this.lines.length;
 		
 		switch(event.key){
 			case "Tab" :
@@ -98,37 +104,45 @@ function newScreenplayElem(type){
 				break;
 			case "Enter" :
 				event.preventDefault();
+				var cutOff = this.value.slice(this.caret.pos());
+				this.value = this.value.slice(0, this.caret.pos());
 				screenplay.addElement(1, true);
+				screenplay.activeElem.value = cutOff;
+				screenplay.activeElem.caret.toStart();
 				break;
 			case "ArrowUp":
 				if(this.caret.isOnTop() && this.scriptIndex() != 0){
 					event.preventDefault();
 					screenplay.activeElem = this.previousSibling;
-					screenplay.activeElem.splitLines();
 					screenplay.activeElem.focus();
-					window.getSelection().collapseToStart(screenplay.activeElem);
+					this.caret.toEnd();
 				}
 				break;
 			case "ArrowDown":
 				if(this.caret.isOnBottom() && this.scriptIndex() != screenplay.childElementCount - 1){
 					event.preventDefault();
 					screenplay.activeElem = this.nextSibling;
-					screenplay.activeElem.splitLines();
 					screenplay.activeElem.focus();
-					window.getSelection().collapseToStart(screenplay.activeElem);
+					this.caret.toStart();
 				}
 				break;
 			case "Backspace":
 				if(this.caret.pos() == 0 && this.scriptIndex() != 0){
 					event.preventDefault();
-					
+					var txt = this.value;
+					screenplay.activeElem = this.previousSibling;
+					screenplay.activeElem.value += txt;
+					screenplay.activeElem.focus();
+					window.getSelection().collapseToEnd(screenplay.activeElem);
+					screenplay.removeChild(screenplay.activeElem.nextElementSibling);
+					screenplay.activeElem.caret.toPos(screenplay.activeElem.value.length - txt.length);
 				}
+				break;
 		}
 	}
 	
 	newElem.onchange = function(){
-		this.splitLines();
-		this.rows = this.lines.length;
+		//this.splitLines();
 	}
 	
 	newElem.shiftType = function(amount){
@@ -144,6 +158,8 @@ function newScreenplayElem(type){
 		this.elemType = elemTypes[newElemIndex];
 		this.classList.replace(this.classList[1], elemTypes[newElemIndex].name);
 		typeSelector.selectedIndex = this.elemType.index;
+		
+		this.splitLines();
 	}
 	
 	newElem.caret = {
@@ -161,11 +177,20 @@ function newScreenplayElem(type){
 			screenplay.activeElem.splitLines();
 			elem = screenplay.activeElem;
 			return elem.innerHTML.length - elem.lines[elem.lines.length-1].length <= this.pos();
+		},
+		toStart : function(){
+			screenplay.activeElem.setSelectionRange(0, 0);
+		},
+		toEnd : function(){
+			screenplay.activeElem.setSelectionRange(screenplay.activeElem.value.length, screenplay.activeElem.value.length);
+		},
+		toPos : function (x){
+			screenplay.activeElem.setSelectionRange(x, x);
 		}
 	}
 	
 	newElem.splitLines = function(){
-		var words = this.innerHTML.replace(/([A-z])-([A-z])/g, "$1- $2").split(" ");
+		var words = this.value.replace(/([A-z])-([A-z])/g, "$1- $2").split(" ");
 		var lines = [words[0]];
 		for(i = 1, j = 0; i < words.length; i++){
 			if(lines[j].charAt(lines[j].length - 1) == "-"){
@@ -237,7 +262,5 @@ function writeFiller(){
 		screenplay.activeElem.innerHTML = content[i];
 	}
 	
-	for(n = 0; n < screenplay.childElementCount; n++){
-		screenplay.children[n].splitLines();
-	}
+	screenplay.fixChildrenHeight();
 }
