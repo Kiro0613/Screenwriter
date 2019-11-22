@@ -6,33 +6,36 @@
 
     <body>
         <h1>Screenwriter</h1>
+		
+		<div id="optionsWrapper" class="optionsWrapper">
+			<div id="options" style="display: flex; flex-direction: row; width: 8.5in; background-color: #F0F0F0; border-bottom: 1px solid #333333; margin: auto;">
+				<span id="fontSizePicker" class="option tooltip">
+					<h4>Font Size</h4>
+					<input type="number" min="1" max="216" value="12" />
+					<span class="tooltiptext">A screenplay should always 12pt font. Use only because of screen size or eyesight!</span>
+				</span>
 
-        <div id="options" style="display: flex; flex-direction: row; width: 8.5in; background-color: #F0F0F0; border-bottom: 1px solid #333333; margin: auto;">
-            <span id="fontSizePicker" class="option">
-                <h4>Font Size</h4>
-                <input type="number" min="1" max="216" value="12" />
-            </span>
-			
-            <span id="addRow" class="option">
-                <button onclick="screenplay.addElement();">Add<br/>Row</button>
-            </span>
-			
-            <span id="deleteRow" class="option">
-				<button onclick="screenplay.deleteLastElement();">Remove<br/>Row</button>
-            </span>
-			
-            <span id="elementPicker" class="option">
-				<h4>Element</h4>
-				<select id="elementTypeSelector">
-					<option value="slug">SLUGLINE</option>
-					<option value="action">ACTION</option>
-					<option value="dial">DIALOGUE</option>
-					<option value="paren">PARENTHETICAL</option>
-					<option value="char">CHARACTER</option>
-					<option value="trans">TRANSITION</option>
-				</select>
-            </span>
-        </div>
+				<span id="addRow" class="option">
+					<button onclick="screenplay.addElement();">Add<br/>Row</button>
+				</span>
+
+				<span id="deleteRow" class="option">
+					<button onclick="screenplay.deleteLastElement();">Remove<br/>Row</button>
+				</span>
+
+				<span id="elementPicker" class="option">
+					<h4>Element</h4>
+					<select id="elementTypeSelector">
+						<option value="slug">SLUGLINE</option>
+						<option value="action">ACTION</option>
+						<option value="dial">DIALOGUE</option>
+						<option value="paren">PARENTHETICAL</option>
+						<option value="char">CHARACTER</option>
+						<option value="trans">TRANSITION</option>
+					</select>
+				</span>
+			</div>
+		</div>
 
         <div id="screenplay" style="display: flex; flex-direction: column;">
         </div>

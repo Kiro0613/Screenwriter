@@ -9,6 +9,12 @@ body{
     font-size: 12pt;
 }
 
+.optionsWrapper{
+	position: -webkit-sticky; /* Safari */
+  	position: sticky;
+  	top: 0;
+}
+
 .option{
 	padding: 4px;
 	text-align: center;
@@ -85,4 +91,27 @@ textarea{
 	padding-right: 1in;
 	padding-bottom: 12px;
 	text-transform: uppercase;
+}
+
+/*Tooltip*/
+.tooltip {
+	position: relative;
+	display: inline-block;
+}
+
+.tooltip .tooltiptext {
+	visibility: hidden;
+	background-color: #D0D0D0;
+	text-align: center;
+	border-radius: 0px 8px 8px 8px;
+	width: 150px;
+	padding: 5px;
+
+	/* Position the tooltip */
+	position: absolute;
+	z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+	visibility: visible;
 }

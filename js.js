@@ -73,7 +73,7 @@ elemTypes = [
 ];
 
 function newScreenplayElem(type){
-    var newElem = document.createElement("TEXTAREA");
+    var newElem = document.createElement("DIV");
 	newElem.elemType = type;
 	newElem.contentEditable = true;
 	newElem.classList.add("element");
@@ -95,8 +95,6 @@ function newScreenplayElem(type){
 	});
 	
 	newElem.onkeydown = function(event){
-		this.splitLines();
-		
 		switch(event.key){
 			case "Tab" :
 				event.preventDefault();
@@ -104,10 +102,10 @@ function newScreenplayElem(type){
 				break;
 			case "Enter" :
 				event.preventDefault();
-				var cutOff = this.value.slice(this.caret.pos());
-				this.value = this.value.slice(0, this.caret.pos());
+				var cutOff = this.innerHTML.slice(this.caret.pos());
+				this.innerHTML = this.innerHTML.slice(0, this.caret.pos());
 				screenplay.addElement(1, true);
-				screenplay.activeElem.value = cutOff;
+				screenplay.activeElem.innerHTML = cutOff;
 				screenplay.activeElem.caret.toStart();
 				break;
 			case "ArrowUp":
@@ -129,16 +127,18 @@ function newScreenplayElem(type){
 			case "Backspace":
 				if(this.caret.pos() == 0 && this.scriptIndex() != 0){
 					event.preventDefault();
-					var txt = this.value;
+					var txt = this.innerHTML;
 					screenplay.activeElem = this.previousSibling;
-					screenplay.activeElem.value += txt;
+					screenplay.activeElem.innerHTML += txt;
 					screenplay.activeElem.focus();
 					window.getSelection().collapseToEnd(screenplay.activeElem);
 					screenplay.removeChild(screenplay.activeElem.nextElementSibling);
-					screenplay.activeElem.caret.toPos(screenplay.activeElem.value.length - txt.length);
+					screenplay.activeElem.caret.toPos(screenplay.activeElem.innerHTML.length - txt.length);
 				}
 				break;
 		}
+		
+		this.splitLines();
 	}
 	
 	newElem.onchange = function(){
@@ -164,7 +164,7 @@ function newScreenplayElem(type){
 	
 	newElem.caret = {
 		pos : function(){
-			return screenplay.activeElem.selectionStart;
+			return window.getSelection().anchorOffset;
 		},
 		posFromEnd : function(){
 			return this.innerHTML.length - this.pos();
@@ -179,18 +179,25 @@ function newScreenplayElem(type){
 			return elem.innerHTML.length - elem.lines[elem.lines.length-1].length <= this.pos();
 		},
 		toStart : function(){
-			screenplay.activeElem.setSelectionRange(0, 0);
+			window.getSelection().collapseToStart();
 		},
 		toEnd : function(){
-			screenplay.activeElem.setSelectionRange(screenplay.activeElem.value.length, screenplay.activeElem.value.length);
+			window.getSelection().collapseToEnd()
 		},
 		toPos : function (x){
-			screenplay.activeElem.setSelectionRange(x, x);
+			var anchor = window.getSelection().anchorNode;
+			window.getSelection().setBaseAndExtent(this.anchor(), x, this.anchor(), x);
+		},
+		isHighlighting : function(){
+			return window.getSelection.isCollapsed;
+		},
+		anchor : function(){
+			return window.getSelection().anchorNode;
 		}
 	}
 	
 	newElem.splitLines = function(){
-		var words = this.value.replace(/([A-z])-([A-z])/g, "$1- $2").split(" ");
+		var words = this.innerHTML.replace(/([A-z])-([A-z])/g, "$1- $2").split(" ");
 		var lines = [words[0]];
 		for(i = 1, j = 0; i < words.length; i++){
 			if(lines[j].charAt(lines[j].length - 1) == "-"){
@@ -210,8 +217,8 @@ function newScreenplayElem(type){
 				lines[j] = words[i];
 			}
 		}
-		this.lines = lines;
-		this.rows = this.lines.length;
+//		this.lines = lines;
+//		this.rows = this.lines.length;
 	}
 
     return newElem;
