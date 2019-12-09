@@ -51,6 +51,7 @@ textarea{
 .element{
 	display: inline;
 	hyphens: none;
+	white-space: pre-wrap;
 }
 
 .element:focus{
