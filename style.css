@@ -9,15 +9,45 @@ body{
     font-size: 12pt;
 }
 
+#screenplay{
+	display: flex;
+	flex-direction: column;
+}
+
 .optionsWrapper{
 	position: -webkit-sticky; /* Safari */
   	position: sticky;
   	top: 0;
 }
 
+.options{
+	display: flex;
+	flex-direction: row;
+	width: 8.5in;
+	background-color: #F0F0F0;
+	border-bottom: 1px solid #333333;
+	margin: auto;
+}
+
 .option{
 	padding: 4px;
 	text-align: center;
+}
+
+#saveMenu{
+	position: absolute;
+	right: 50%;
+	top: 50%;
+	width: 100%;
+	background-color: #FFDDAA;
+}
+
+#advOptions{
+	display: none;
+}
+
+.optionNum{
+	width: 24px;
 }
 
 h4{

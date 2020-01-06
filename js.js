@@ -229,6 +229,7 @@ function init(){
 //	screenplay.activeElem = screenplay.children[0];
 //	screenplay.activeElem.innerHTML = "Patrons chirp at one another and waiters bustle around carrying coffees and pastries. At one of the tables is JAMES, a Matrix-clad thirtysomething with slick-backed hair and a leather coat, pounding away on his laptop.";
 	writeFiller();
+	optionsInit();
 }
 
 document.addEventListener('DOMContentLoaded', function(event) {
