@@ -270,5 +270,27 @@ function writeFiller(){
 		screenplay.activeElem.innerHTML = content[i];
 	}
 	
-	screenplay.fixChildrenHeight();
+	//screenplay.fixChildrenHeight();
+}
+
+var saveBox = document.getElementById("saveBox");
+
+var loadBox = document.getElementById("loadBox");
+loadBox.onchange(function({
+	document.getElementById("loadForm").submit();
+});
+
+var printBox = document.getElementById("printBox");
+
+function loadFile() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+		var x = this.responseText;
+		x = JSON.parse(x);
+      document.body.replaceChild(toDOMCE(x), document.body.childNodes[5]);
+    }
+  };
+  xhttp.open("GET", "test.txt", true);
+  xhttp.send();
 }

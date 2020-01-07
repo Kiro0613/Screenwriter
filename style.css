@@ -27,6 +27,7 @@ body{
 	background-color: #F0F0F0;
 	border-bottom: 1px solid #333333;
 	margin: auto;
+    align-items: center;
 }
 
 .option{
@@ -54,8 +55,9 @@ h4{
     margin: 0%;
 }
 
-button{
+.optionsButton{
     font-family: 'Courier New', Courier, monospace;
+	height: 100%;
 }
 
 textarea{
