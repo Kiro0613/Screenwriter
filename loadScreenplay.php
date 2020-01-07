@@ -1,4 +1,3 @@
 <?php
-$data = file_get_contents($_POST['']);
-echo data;
+echo file_get_contents($_FILES['load']['name']);
 ?>

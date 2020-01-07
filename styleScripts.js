@@ -18,7 +18,7 @@ var elemStyle = {
 		var styleArr = [this.slug, this.action, this.dial, this.paren, this.name, this.trans];
 		var leftPads = document.getElementById("leftPadOptions").childNodes;
 		for(i = 0; i < 6; i++){
-			console.log(styleArr[i].paddingLeft)
+			//console.log(styleArr[i].paddingLeft)
 			//leftPads[i+1].firstChild.value = styleArr[i].paddingLeft;
 		}
 	}

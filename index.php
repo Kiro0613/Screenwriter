@@ -5,6 +5,7 @@
     </head>
 
     <body>
+	<div id="main">
         <h1>Screenwriter</h1>
 		<div id="optionsWrapper" class="optionsWrapper">
 			<div id="options" class="options">
@@ -34,8 +35,12 @@
 					</select>
 				</span>
 				
-				<input id="saveBox" type="button" class="optionsButton" value="Save" onclick="loadFile()" />
-				<form action="loadScreenplay.php" method="post" id="loadForm"><input id="loadBox" type="file" class="optionsButton" value="Load" /></form>
+				<input id="saveBox" type="button" class="optionsButton" value="Save" onclick="" />
+				
+				<form enctype="multipart/form-data" action="loadScreenplay.php" method="POST" id="loadForm">
+					<input id="loadBox" type="file" class="optionsButton" name="load" />
+				</form>
+				
 				<input id="printBox" type="button" class="optionsButton" value="Print" />
 			</div>
 			
@@ -76,7 +81,7 @@
 		</div>
 
         <div id="screenplay" style="display: flex; flex-direction: column;"></div>
-		
+	</div>
     </body>
 
     <script src="js.js"></script>

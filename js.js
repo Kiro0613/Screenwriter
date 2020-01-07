@@ -273,24 +273,34 @@ function writeFiller(){
 	//screenplay.fixChildrenHeight();
 }
 
+var main = document.getElementById("main");
+
 var saveBox = document.getElementById("saveBox");
 
 var loadBox = document.getElementById("loadBox");
-loadBox.onchange(function({
-	document.getElementById("loadForm").submit();
-});
+loadBox.onchange = function(){
+	//document.getElementById("loadForm").submit();
+	loadFile();
+};
 
 var printBox = document.getElementById("printBox");
 
+var loadFormData;
+
+
 function loadFile() {
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-		var x = this.responseText;
-		x = JSON.parse(x);
-      document.body.replaceChild(toDOMCE(x), document.body.childNodes[5]);
-    }
-  };
-  xhttp.open("GET", "test.txt", true);
-  xhttp.send();
+	loadFormData = new FormData(document.getElementById("loadForm"));
+	var file = loadBox.files[0];
+	console.log(file);
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && (this.status == 200 || this.status == 0)) {
+			var x = this.responseText;
+			x = JSON.parse(x);
+			main.replaceChild(toDOMCE(x), main.childNodes[5]);
+		}
+	};
+
+	xhttp.open("POST", "loadScreenplay.php", true);
+	xhttp.send(loadFormData);
 }

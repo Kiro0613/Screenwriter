@@ -1,12 +1,16 @@
 body{
     display: flex;
-    flex-direction: column;
-    width: 50%;
-    margin: auto;
     background-color: #a4c1ff;
 
     font-family: 'Courier New', Courier, monospace;
     font-size: 12pt;
+}
+
+#main{
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    margin: auto;
 }
 
 #screenplay{
