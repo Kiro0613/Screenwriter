@@ -73,10 +73,10 @@ elemTypes = [
 ];
 
 var elemsEditable = true;
-screenplay.contentEditable = !elemsEditable;
+//screenplay.contentEditable = !elemsEditable;
 
 function newScreenplayElem(type){
-    var newElem = document.createElement("DIV");
+    var newElem = document.createElement("SPAN");
 	newElem.elemType = type;
 	newElem.contentEditable = elemsEditable;
 	newElem.classList.add("element");
@@ -232,11 +232,18 @@ function newScreenplayElem(type){
     return newElem;
 }
 
+function setHighlightMode(x){
+	screenplay.contentEditable = x;
+//	screenplay.childNodes.forEach(function(item){
+//		item.contentEditable = !x;
+//	})
+}
+
 function init(){
 //	screenplay.activeElem = screenplay.children[0];
 //	screenplay.activeElem.innerHTML = "Patrons chirp at one another and waiters bustle around carrying coffees and pastries. At one of the tables is JAMES, a Matrix-clad thirtysomething with slick-backed hair and a leather coat, pounding away on his laptop.";
-	//writeFiller();
-	screenplay.addElement(0);
+	writeFiller();
+	//screenplay.addElement(0);
 	optionsInit();
 }
 
@@ -294,7 +301,6 @@ loadBox.onchange = function(){
 var printBox = document.getElementById("printBox");
 
 var loadFormData;
-
 
 function loadFile() {
 	loadFormData = new FormData(document.getElementById("loadForm"));
