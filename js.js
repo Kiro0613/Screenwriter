@@ -104,7 +104,6 @@ function newScreenplayElem(type){
 	newElem.onkeydown = function(event){
 		switch(event.key){
 			case "Tab" :
-				console.log("Here");
 				event.preventDefault();
 				this.shiftType(event.shiftKey ? -1 : 1);
 				break;
@@ -242,9 +241,17 @@ function setHighlightMode(x){
 function init(){
 //	screenplay.activeElem = screenplay.children[0];
 //	screenplay.activeElem.innerHTML = "Patrons chirp at one another and waiters bustle around carrying coffees and pastries. At one of the tables is JAMES, a Matrix-clad thirtysomething with slick-backed hair and a leather coat, pounding away on his laptop.";
-	writeFiller();
-	//screenplay.addElement(0);
-	optionsInit();
+	var doFiller = true;
+	
+	if(doFiller){
+		writeFiller();
+	} else {
+		screenplay.addElement(0);
+		screenplay.activeElem.innerHTML = "FADE IN:";
+		screenplay.addElement(0);
+		screenplay.activeElem.innerHTML = "";
+		optionsInit();
+	}
 }
 
 document.addEventListener('DOMContentLoaded', function(event) {
@@ -260,15 +267,14 @@ typeSelector.onchange = function(){
 function writeFiller(){
 	var content = [
 		"FADE IN:",
-		"INT. BARBALOW CAFE - DAY",
-		"Patrons chirp at one another and waiters bustle around carrying coffees and pastries. At one of the tables is JAMES, a Matrix-clad thirtysomething with slick-backed hair and a leather coat, pounding away on his laptop.",
+		"INT. BARB",
+		"Patrot, pounding away on his laptop.",
 		"WAITRESS",
 		"(nervous)",
 		"Excuse me, sir? Would you like anything?",
 		"James turns to her and nods with a smug grin. He continues his typing with one hand.",
 		"JAMES",
-		"No, thanks. I'm cool. Say, why don't you get yourself a drink, on me? I should have the money in three, two...",
-		"James's laptop beeps violently and a cash register noise is heard.",
+		"No, thanks. I'm cool. Say, why don't you get yourself a drink, on me? I should have the y and a cash register noise is heard.",
 		"JAMES (cont'd)",
 		"And, done! There we go - I've hacked into the mainframe of the Trustworthy Pioneer Bank and transferred twenty million dollars straight from those corporate bigwigs' accounts into mine. It's okay to be impressed, baby.",
 		"FADE TO:",
@@ -291,30 +297,92 @@ function writeFiller(){
 var main = document.getElementById("main");
 
 var saveBox = document.getElementById("saveBox");
+saveBox.onclick = function(){
+	saveFile();
+}
 
-var loadBox = document.getElementById("loadBox");
-loadBox.onchange = function(){
+var loadForm = document.createElement("FORM");
+var loadInput = document.createElement("INPUT");
+loadInput.setAttribute("id", "loadInput")
+loadInput.setAttribute("type", "file");
+loadInput.setAttribute("name", "scriptFile");
+loadInput.style.display = "none";
+loadInput.onchange = function(){
 	//document.getElementById("loadForm").submit();
 	loadFile();
 };
+var loadLabel = document.createElement("LABEL");
+loadLabel.setAttribute("for", "loadInput");
+loadLabel.setAttribute("class", "optionsButton");
+loadLabel.innerHTML = "Load";
+loadForm.appendChild(loadLabel);
+loadForm.appendChild(loadInput);
 
-var printBox = document.getElementById("printBox");
-
-var loadFormData;
+document.getElementById("rightOptions").replaceChild(loadForm, document.getElementById("rightOptions").childNodes[3]);
 
 function loadFile() {
-	loadFormData = new FormData(document.getElementById("loadForm"));
-	var file = loadBox.files[0];
-	console.log(file);
+	var file = loadInput.files[0];
+	
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && (this.status == 200 || this.status == 0)) {
 			var x = this.responseText;
+			console.log(x);
+			var nums = new RegExp("[0-9]");
+			//console.log(nums.test(x.charAt(-1)));
+			
 			x = JSON.parse(x);
 			main.replaceChild(toDOMCE(x), main.childNodes[5]);
 		}
 	};
 
 	xhttp.open("POST", "loadScreenplay.php", true);
-	xhttp.send(loadFormData);
+	xhttp.send(new FormData(loadForm));
 }
+
+var saveFormData;
+
+var saveForm = document.createElement("FORM");
+var saveInput = document.createElement("INPUT");
+saveInput.setAttribute("type", "text");
+saveInput.setAttribute("name", "txt");
+saveInput.setAttribute("value", JSON.stringify(toJSON(screenplay)));
+saveForm.appendChild(saveInput);
+
+function saveFile(){
+	saveInput.setAttribute("value", JSON.stringify(toJSON(screenplay)));
+	saveFormData = new FormData(saveForm);
+	
+	var xhttp = new XMLHttpRequest();
+	xhttp.responseType = "blob";
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && (this.status == 200 || this.status == 0)) {
+			var x = this.response;
+			
+			console.log(x);
+			saveBlob(x, "Testing Blobbles.txt");
+		}
+	};
+	xhttp.open("POST", "saveScreenplay.php", true);
+	xhttp.send(saveFormData);
+}
+
+function saveBlob(blob) {
+    var a = document.createElement('a');
+    a.href = window.URL.createObjectURL(blob);
+    a.download = "script.txt";
+    a.dispatchEvent(new MouseEvent('click'));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

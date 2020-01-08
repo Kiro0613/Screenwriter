@@ -107,3 +107,7 @@ function toDOMCE(input){
 	
 	return x;
 }
+
+function testScriptFile(){
+	console.log(JSON.stringify(toJSON(screenplay)));
+}

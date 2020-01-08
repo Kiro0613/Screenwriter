@@ -32,6 +32,7 @@ body{
 	border-bottom: 1px solid #333333;
 	margin: auto;
     align-items: center;
+	justify-content: space-between;
 }
 
 .option{
@@ -59,9 +60,25 @@ h4{
     margin: 0%;
 }
 
-.optionsButton{
-    font-family: 'Courier New', Courier, monospace;
-	height: 100%;
+.optionsButton {
+	background-color: #7892c2;
+	border: 1px solid #4c64a6;
+	display: inline-block;
+	cursor: pointer;
+	color: #ffffff;
+	font-family: Courier New;
+	font-size: 14px;
+	padding: 6px 12px;
+	text-decoration: none;
+	text-shadow: 0px 1px 0px #283966;
+	margin: 2px;
+}
+.optionsButton: hover {
+	background-color: #476e9e;
+}
+.optionsButton: active {
+	position: relative;
+	top: 1px;
 }
 
 textarea{
@@ -90,7 +107,7 @@ textarea{
 	white-space: pre-wrap;
 }
 
-.element:focus{
+.element: focus{
 	background-color: #faf8f0;
 }
 
@@ -149,6 +166,6 @@ textarea{
 	z-index: 1;
 }
 
-.tooltip:hover .tooltiptext {
+.tooltip: hover .tooltiptext {
 	visibility: visible;
 }

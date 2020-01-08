@@ -1,3 +1,3 @@
 <?php
-echo file_get_contents($_FILES['load']['name']);
+echo $_FILES['file']['name'];
 ?>
