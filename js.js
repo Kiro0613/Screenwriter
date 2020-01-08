@@ -14,7 +14,7 @@ screenplay.addElement = function(elemType, insert){
 		this.appendChild(newScreenplayElem(elemTypes[elemType]));
 		this.activeElem = this.lastChild;
 		this.activeElem.focus();
-		window.getSelection().collapseToEnd(this.activeElem);
+		//window.getSelection().collapseToEnd(this.activeElem);
 	}
 
 	//this.activeElem.splitLines();
@@ -72,10 +72,13 @@ elemTypes = [
 	}
 ];
 
+var elemsEditable = true;
+screenplay.contentEditable = !elemsEditable;
+
 function newScreenplayElem(type){
     var newElem = document.createElement("DIV");
 	newElem.elemType = type;
-	newElem.contentEditable = true;
+	newElem.contentEditable = elemsEditable;
 	newElem.classList.add("element");
 	newElem.classList.add(type.name);
     newElem.innerHTML = type.commonName;
@@ -87,6 +90,10 @@ function newScreenplayElem(type){
 		}
 	}
 	
+	newElem.addEventListener("click", function(){
+		console.log(this.elemType.index);
+	});
+	
     newElem.addEventListener("focus", function(){
 		//this.splitLines();
 
@@ -97,6 +104,7 @@ function newScreenplayElem(type){
 	newElem.onkeydown = function(event){
 		switch(event.key){
 			case "Tab" :
+				console.log("Here");
 				event.preventDefault();
 				this.shiftType(event.shiftKey ? -1 : 1);
 				break;
@@ -225,10 +233,10 @@ function newScreenplayElem(type){
 }
 
 function init(){
-//	screenplay.addElement(0);
 //	screenplay.activeElem = screenplay.children[0];
 //	screenplay.activeElem.innerHTML = "Patrons chirp at one another and waiters bustle around carrying coffees and pastries. At one of the tables is JAMES, a Matrix-clad thirtysomething with slick-backed hair and a leather coat, pounding away on his laptop.";
-	writeFiller();
+	//writeFiller();
+	screenplay.addElement(0);
 	optionsInit();
 }
 

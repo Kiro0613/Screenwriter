@@ -80,7 +80,7 @@
 			</div>
 		</div>
 
-        <div id="screenplay" style="display: flex; flex-direction: column;"></div>
+        <div id="screenplay" style="display: flex; flex-direction: column;" contenteditable="true"></div>
 	</div>
     </body>
 
