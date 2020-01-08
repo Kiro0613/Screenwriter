@@ -1,3 +1,3 @@
 <?php
-echo $_FILES['file']['name'];
+echo file_get_contents($_FILES['scriptFile']['tmp_name']);
 ?>

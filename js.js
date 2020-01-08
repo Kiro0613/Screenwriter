@@ -24,18 +24,25 @@ screenplay.addElement = function(elemType, insert){
 
 screenplay.deleteLastElement = function(){
 	console.log(this.childElementCount);
-	if(this.childElementCount<= 1){
+	if(this.childElementCount <= 1){
 		console.log("Did not delete: Cannot delete last element in script");
 	} else {
 		this.removeChild(this.lastElementChild);
 	}
 }
 
-screenplay.fixChildrenHeight = function(){
-	for(k = 0; k < this.childElementCount; k++){
-		this.children[k].splitLines();
+screenplay.deleteAllElements = function(){
+	var n = this.childElementCount;
+	for(i = 0; i < n; i++){
+		this.removeChild(this.firstChild);
 	}
 }
+
+//screenplay.fixChildrenHeight = function(){
+//	for(k = 0; k < this.childElementCount; k++){
+//		this.children[k].splitLines();
+//	}
+//}
 
 //Sorted by indentation
 elemTypes = [
@@ -244,7 +251,7 @@ function init(){
 	var doFiller = true;
 	
 	if(doFiller){
-		writeFiller();
+		writeFromScriptObject(barbalow);
 	} else {
 		screenplay.addElement(0);
 		screenplay.activeElem.innerHTML = "FADE IN:";
@@ -252,6 +259,12 @@ function init(){
 		screenplay.activeElem.innerHTML = "";
 		optionsInit();
 	}
+}
+
+//Default Script Objects
+var barbalow = {
+	content : ["FADE IN:", "INT. BARBALOW CAFE - DAY", "Patrons chirp at one another and waiters bustle around carrying coffees and pastries. At one of the tables is JAMES, a Matrix-clad thirtysomething with slick-backed hair and a leather coat, pounding away on his laptop.", "WAITRESS", "(nervous)", "Excuse me, sir? Would you like anything?", "James turns to her and nods with a smug grin. He continues his typing with one hand.", "JAMES", "No, thanks. I'm cool. Say, why don't you get yourself a drink, on me? I should have the money in three, two...", "James's laptop beeps violently and a cash register noise is heard.", "JAMES (cont'd)", "And, done! There we go - I've hacked into the mainframe of the Trustworthy Pioneer Bank and transferred twenty million dollars straight from those corporate bigwigs' accounts into mine. It's okay to be impressed, baby.", "FADE TO:", "EXT. ALLEYWAY - SUNSET", "JAMES drives down the street. He parallel parks next to an abandoned warehouse with a sign reading \"WARNING: NO ILLEGAL ACTIVITY OCCURS HERE. PLEASE LOOK AWAY.\"", "James gets out of his car, fedora pulled low over his head. He walks into the alley and meets two other men, BROCKO and SHIVA.", "BROCKO", "Ya got the goods?"],
+	classes : [0,0,1,4,3,2,1,4,2,1,4,2,5,0,1,1,4,2]
 }
 
 document.addEventListener('DOMContentLoaded', function(event) {
@@ -264,31 +277,24 @@ typeSelector.onchange = function(){
 	elem.classList.replace(elem.classList[1], elemTypes[this.selectedIndex].name);
 }
 
-function writeFiller(){
-	var content = [
-		"FADE IN:",
-		"INT. BARB",
-		"Patrot, pounding away on his laptop.",
-		"WAITRESS",
-		"(nervous)",
-		"Excuse me, sir? Would you like anything?",
-		"James turns to her and nods with a smug grin. He continues his typing with one hand.",
-		"JAMES",
-		"No, thanks. I'm cool. Say, why don't you get yourself a drink, on me? I should have the y and a cash register noise is heard.",
-		"JAMES (cont'd)",
-		"And, done! There we go - I've hacked into the mainframe of the Trustworthy Pioneer Bank and transferred twenty million dollars straight from those corporate bigwigs' accounts into mine. It's okay to be impressed, baby.",
-		"FADE TO:",
-		"EXT. ALLEYWAY - SUNSET",
-		"JAMES drives down the street. He parallel parks next to an abandoned warehouse with a sign reading \"WARNING: NO ILLEGAL ACTIVITY OCCURS HERE. PLEASE LOOK AWAY.\"",
-		"James gets out of his car, fedora pulled low over his head. He walks into the alley and meets two other men, BROCKO and SHIVA.",
-		"BROCKO",
-		"Ya got the goods?"
-  	]
+function createScriptObject(){
+	var obj = {content : [], classes : []};
+	for(i = 0; i < screenplay.childElementCount; i++){
+		obj.content[i] = screenplay.childNodes[i].innerHTML;
+		obj.classes[i] = screenplay.childNodes[i].elemType.index;
+	}
 	
-	var classes = [0, 0, 1, 4, 3, 2, 1, 4, 2, 1, 4, 2, 5, 0, 1, 1, 4, 2];
-	for(i = 0; i < classes.length; i++){
-		screenplay.addElement(classes[i]);
-		screenplay.activeElem.innerHTML = content[i];
+	return obj;
+}
+
+function writeFromScriptObject(scriptObj){
+	screenplay.deleteAllElements();
+	
+	console.log(scriptObj);
+	
+	for(i = 0; i < scriptObj.content.length; i++){
+		screenplay.addElement(scriptObj.classes[i]);
+		screenplay.activeElem.innerHTML = scriptObj.content[i];
 	}
 	
 	//screenplay.fixChildrenHeight();
@@ -296,14 +302,12 @@ function writeFiller(){
 
 var main = document.getElementById("main");
 
-var saveBox = document.getElementById("saveBox");
-saveBox.onclick = function(){
-	saveFile();
-}
-
+//Loading screenplays
 var loadForm = document.createElement("FORM");
+loadForm.setAttribute("enctype", "multipart/form-data");
+loadForm.setAttribute("method", "post");
 var loadInput = document.createElement("INPUT");
-loadInput.setAttribute("id", "loadInput")
+loadInput.setAttribute("id", "loadInput");
 loadInput.setAttribute("type", "file");
 loadInput.setAttribute("name", "scriptFile");
 loadInput.style.display = "none";
@@ -327,12 +331,23 @@ function loadFile() {
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && (this.status == 200 || this.status == 0)) {
 			var x = this.responseText;
-			console.log(x);
-			var nums = new RegExp("[0-9]");
-			//console.log(nums.test(x.charAt(-1)));
 			
-			x = JSON.parse(x);
-			main.replaceChild(toDOMCE(x), main.childNodes[5]);
+			while(/[0-9]/.test(x.charAt(x.length-1))){
+				x = x.slice(0, -1);
+			}
+			
+			try{
+				x = JSON.parse(x);
+				//x = toDOMCE(JSON.parse(x));
+			}catch(e){
+				console.error(e);
+				alert("Could not load file!");
+				return;
+			}
+			
+//			main.replaceChild(x, main.childNodes[5]);
+			writeFromScriptObject(x);
+			loadInput.value = "";
 		}
 	};
 
@@ -340,18 +355,21 @@ function loadFile() {
 	xhttp.send(new FormData(loadForm));
 }
 
-var saveFormData;
+//Saving screenplays
+var saveBox = document.getElementById("saveBox");
+saveBox.onclick = function(){
+	saveFile();
+}
 
 var saveForm = document.createElement("FORM");
 var saveInput = document.createElement("INPUT");
 saveInput.setAttribute("type", "text");
 saveInput.setAttribute("name", "txt");
-saveInput.setAttribute("value", JSON.stringify(toJSON(screenplay)));
 saveForm.appendChild(saveInput);
 
 function saveFile(){
-	saveInput.setAttribute("value", JSON.stringify(toJSON(screenplay)));
-	saveFormData = new FormData(saveForm);
+	saveInput.setAttribute("value", JSON.stringify(createScriptObject()));
+	var saveFormData = new FormData(saveForm);
 	
 	var xhttp = new XMLHttpRequest();
 	xhttp.responseType = "blob";
