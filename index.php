@@ -32,6 +32,8 @@
 							<option value="trans">TRANSITION</option>
 						</select>
 					</span>
+					
+					<button onclick="screenplay.clearAll();" class="optionsButton">Clear<br/>Script</button>
 				</div>
 				
 				<div id="rightOptions" style="display: flex; flex-direction: row; margin-right: 4px;">
@@ -82,7 +84,7 @@
 			</div>
 		</div>
 
-        <div id="screenplay"></div>
+        <div id="screenplay" contenteditable="true"></div>
 	</div>
     </body>
 	

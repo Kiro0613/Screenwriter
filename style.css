@@ -16,6 +16,15 @@ body{
 #screenplay{
 	display: flex;
 	flex-direction: column;
+	
+	width: 8.5in;
+	min-height: 11in;
+	height: auto;
+	padding-top: 1in;
+	padding-bottom: 1in;
+	background-color: #FFFFFF;
+	margin: auto;
+	margin-bottom: 24px;
 }
 
 .optionsWrapper{
@@ -91,14 +100,6 @@ textarea{
 }
 
 #screenplay{
-	width: 8.5in;
-	min-height: 11in;
-	height: auto;
-	padding-top: 1in;
-	padding-bottom: 1in;
-	background-color: #FFFFFF;
-	margin: auto;
-	margin-bottom: 24px;
 }
 
 .element{

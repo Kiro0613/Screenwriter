@@ -1,23 +1,21 @@
 var screenplay = document.getElementById("screenplay");
 
-screenplay.addElement = function(elemType, insert){
+screenplay.addElement = function(elemType, insert, text){
 	if(elemType == undefined){
 		elemType = 1;
 	}
 	
 	if(insert){
-		this.insertBefore(newScreenplayElem(elemTypes[elemType]), this.activeElem.nextSibling);
+		this.insertBefore(newScreenplayElem(elemTypes[elemType], text), this.activeElem.nextSibling);
 		this.activeElem = this.activeElem.nextSibling;
-		this.activeElem.focus();
+//		this.activeElem.focus();
 		//this.activeElem.setSelectionRange(-1, 0)
 	} else {
-		this.appendChild(newScreenplayElem(elemTypes[elemType]));
+		this.appendChild(newScreenplayElem(elemTypes[elemType], text));
 		this.activeElem = this.lastChild;
-		this.activeElem.focus();
+//		this.activeElem.focus();
 		//window.getSelection().collapseToEnd(this.activeElem);
 	}
-
-	//this.activeElem.splitLines();
 	
 	return this.activeElem;
 }
@@ -38,11 +36,17 @@ screenplay.deleteAllElements = function(){
 	}
 }
 
-//screenplay.fixChildrenHeight = function(){
-//	for(k = 0; k < this.childElementCount; k++){
-//		this.children[k].splitLines();
-//	}
-//}
+screenplay.clearAll = function(skipPrompt){
+	if(skipPrompt != true){
+		if(confirm("Are you sure you want to delete the whole script?") == false){
+			return;
+		}
+	}
+	screenplay.deleteAllElements();
+	
+	screenplay.addElement(0, false, "FADE IN:");
+	screenplay.addElement(0, false, "");
+}
 
 //Sorted by indentation
 elemTypes = [
@@ -79,84 +83,19 @@ elemTypes = [
 	}
 ];
 
-var elemsEditable = true;
-//screenplay.contentEditable = !elemsEditable;
-
-function newScreenplayElem(type){
+function newScreenplayElem(type, text){
     var newElem = document.createElement("SPAN");
 	newElem.elemType = type;
-	newElem.contentEditable = elemsEditable;
+	//newElem.contentEditable = elemsEditable;
 	newElem.classList.add("element");
 	newElem.classList.add(type.name);
-    newElem.innerHTML = type.commonName;
+    newElem.innerHTML = (text == null ? type.commonName : text);
 	newElem.lines = [""];
 	
 	newElem.scriptIndex = function(){
 		for(i = 0; i < screenplay.childElementCount; i++){
 			if(screenplay.children[i] == this){return i;}
 		}
-	}
-	
-	newElem.addEventListener("click", function(){
-		console.log(this.elemType.index);
-	});
-	
-    newElem.addEventListener("focus", function(){
-		//this.splitLines();
-
-		screenplay.activeElem = this;
-		typeSelector.selectedIndex = this.elemType.index;
-	});
-	
-	newElem.onkeydown = function(event){
-		switch(event.key){
-			case "Tab" :
-				event.preventDefault();
-				this.shiftType(event.shiftKey ? -1 : 1);
-				break;
-			case "Enter" :
-				event.preventDefault();
-				var cutOff = this.innerHTML.slice(this.caret.pos());
-				this.innerHTML = this.innerHTML.slice(0, this.caret.pos());
-				screenplay.addElement(1, true);
-				screenplay.activeElem.innerHTML = cutOff;
-				screenplay.activeElem.caret.toStart();
-				break;
-			case "ArrowUp":
-				if(this.caret.isOnTop() && this.scriptIndex() != 0){
-					event.preventDefault();
-					screenplay.activeElem = this.previousSibling;
-					screenplay.activeElem.focus();
-					this.caret.toEnd();
-				}
-				break;
-			case "ArrowDown":
-				if(this.caret.isOnBottom() && this.scriptIndex() != screenplay.childElementCount - 1){
-					event.preventDefault();
-					screenplay.activeElem = this.nextSibling;
-					screenplay.activeElem.focus();
-					this.caret.toStart();
-				}
-				break;
-			case "Backspace":
-				if(this.caret.pos() == 0 && this.scriptIndex() != 0){
-					event.preventDefault();
-					var txt = this.innerHTML;
-					screenplay.activeElem = this.previousSibling;
-					screenplay.activeElem.innerHTML += txt;
-					screenplay.activeElem.focus();
-					window.getSelection().collapseToEnd(screenplay.activeElem);
-					screenplay.removeChild(screenplay.activeElem.nextElementSibling);
-					screenplay.activeElem.caret.toPos(screenplay.activeElem.innerHTML.length - txt.length);
-				}
-				break;
-		}
-		
-		this.splitLines();
-	}
-	
-	newElem.onchange = function(){
-		//this.splitLines();
 	}
 	
 	newElem.shiftType = function(amount){
@@ -172,83 +111,70 @@ function newScreenplayElem(type){
 		this.elemType = elemTypes[newElemIndex];
 		this.classList.replace(this.classList[1], elemTypes[newElemIndex].name);
 		typeSelector.selectedIndex = this.elemType.index;
-		
-		this.splitLines();
 	}
-	
-	newElem.caret = {
-		pos : function(){
-			return window.getSelection().anchorOffset;
-		},
-		posFromEnd : function(){
-			return this.innerHTML.length - this.pos();
-		},
-		isOnTop : function(){
-			screenplay.activeElem.splitLines();
-			return screenplay.activeElem.lines[0].length - this.pos() >= 0;
-		},
-		isOnBottom : function(){
-			screenplay.activeElem.splitLines();
-			elem = screenplay.activeElem;
-			return elem.innerHTML.length - elem.lines[elem.lines.length-1].length <= this.pos();
-		},
-		toStart : function(){
-			window.getSelection().collapseToStart();
-		},
-		toEnd : function(){
-			window.getSelection().collapseToEnd()
-		},
-		toPos : function (x){
-			var anchor = window.getSelection().anchorNode;
-			window.getSelection().setBaseAndExtent(this.anchor(), x, this.anchor(), x);
-		},
-		isHighlighting : function(){
-			return window.getSelection.isCollapsed;
-		},
-		anchor : function(){
-			return window.getSelection().anchorNode;
-		}
-	}
-	
-	newElem.splitLines = function(){
-		var words = this.innerHTML.replace(/([A-z])-([A-z])/g, "$1- $2").split(" ");
-		var lines = [words[0]];
-		for(i = 1, j = 0; i < words.length; i++){
-			if(lines[j].charAt(lines[j].length - 1) == "-"){
-				if(lines[j].length + words[i].length <= this.elemType.lineWidth){
-					lines[j] += words[i]; 
-				} else {
-					//console.log("here 2");
-					j++;
-					lines[j] = words[i];
-				}
-			} else if(lines[j].length + words[i].length + 1 <= this.elemType.lineWidth){
-				//console.log("here 1");
-				lines[j] += (" " + words[i]); 
-			} else {
-				//console.log("here 2");
-				j++;
-				lines[j] = words[i];
-			}
-		}
-//		this.lines = lines;
-//		this.rows = this.lines.length;
-	}
+	newElem.addEventListener('contextmenu', function(event) {
+		event.preventDefault();
+		console.log("Test");
+		return false;
+	}, false);
 
     return newElem;
 }
 
-function setHighlightMode(x){
-	screenplay.contentEditable = x;
-//	screenplay.childNodes.forEach(function(item){
-//		item.contentEditable = !x;
-//	})
+screenplay.onkeydown = function(event){
+	screenplay.activeElem = window.getSelection().anchorNode;
+	if(screenplay.activeElem.nodeType == 3){
+		screenplay.activeElem = screenplay.activeElem.parentNode;
+	}
+	
+	typeSelector.selectedIndex = screenplay.activeElem.elemType.index;
+	
+	switch(event.key){
+		case "Tab" :
+			event.preventDefault();
+			screenplay.activeElem.shiftType(event.shiftKey ? -1 : 1);
+			break;
+		case "Enter" :
+			event.preventDefault();
+			var cutOff = screenplay.activeElem.innerHTML.slice(window.getSelection().anchorOffset);
+			if(cutOff == ""){
+				cutOff = "<br />";
+			}
+			
+			var leftover = screenplay.activeElem.innerHTML.slice(0, window.getSelection().anchorOffset);
+			if(leftover == ""){
+				leftover = "<br />";
+			}
+			
+			screenplay.activeElem.innerHTML = leftover;
+			screenplay.addElement(1, true);
+			screenplay.activeElem.innerHTML = cutOff;
+			window.getSelection().getRangeAt(0).setStart(screenplay.activeElem, 0)
+			break;
+		case "ArrowUp":
+			if(screenplay.activeElem.previousSibling == null){break;}
+			screenplay.activeElem = screenplay.activeElem.previousSibling;
+			typeSelector.selectedIndex = screenplay.activeElem.elemType.index;
+			break;
+		case "ArrowDown":
+			if(screenplay.activeElem.nextSibling == null){break;}
+			screenplay.activeElem = screenplay.activeElem.nextSibling;
+			typeSelector.selectedIndex = screenplay.activeElem.elemType.index;
+			break;
+	}
+}
+
+screenplay.onclick = function(){
+	screenplay.activeElem = window.getSelection().anchorNode;
+	if(screenplay.activeElem.nodeType == 3){
+		screenplay.activeElem = screenplay.activeElem.parentNode;
+	}
+	
+	typeSelector.selectedIndex = screenplay.activeElem.elemType.index;
 }
 
 function init(){
-//	screenplay.activeElem = screenplay.children[0];
-//	screenplay.activeElem.innerHTML = "Patrons chirp at one another and waiters bustle around carrying coffees and pastries. At one of the tables is JAMES, a Matrix-clad thirtysomething with slick-backed hair and a leather coat, pounding away on his laptop.";
-	var doFiller = true;
+	var doFiller = false;
 	
 	if(doFiller){
 		writeFromScriptObject(barbalow);
@@ -256,7 +182,7 @@ function init(){
 		screenplay.addElement(0);
 		screenplay.activeElem.innerHTML = "FADE IN:";
 		screenplay.addElement(0);
-		screenplay.activeElem.innerHTML = "";
+		screenplay.activeElem.innerHTML = "<br />";
 		optionsInit();
 	}
 }
@@ -267,9 +193,7 @@ var barbalow = {
 	classes : [0,0,1,4,3,2,1,4,2,1,4,2,5,0,1,1,4,2]
 }
 
-document.addEventListener('DOMContentLoaded', function(event) {
-	init();
-})
+document.addEventListener('DOMContentLoaded', function(event) {init();})
 
 var typeSelector = document.getElementById("elementTypeSelector");
 typeSelector.onchange = function(){
@@ -289,8 +213,6 @@ function createScriptObject(){
 
 function writeFromScriptObject(scriptObj){
 	screenplay.deleteAllElements();
-	
-	console.log(scriptObj);
 	
 	for(i = 0; i < scriptObj.content.length; i++){
 		screenplay.addElement(scriptObj.classes[i]);
@@ -377,7 +299,6 @@ function saveFile(){
 		if (this.readyState == 4 && (this.status == 200 || this.status == 0)) {
 			var x = this.response;
 			
-			console.log(x);
 			saveBlob(x, "Testing Blobbles.txt");
 		}
 	};
