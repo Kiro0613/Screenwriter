@@ -115,14 +115,17 @@ screenplay.addEventListener('contextmenu', function(event) {
 }, false);
 
 window.onclick = function(event){
-	contextMenu.style.visibility = "hidden";
-	console.log(event.target);
+	if(event.target != contextMenu){
+		contextMenu.style.visibility = "hidden";
+	}
 }
 
 var main = document.getElementById("main");
-
 var contextMenu = document.getElementById("contextMenu");
 
+function changeType(newType){
+	screenplay.activeElem.changeType(newType);
+}
 
 function init(){
 	var doFiller = false;
@@ -142,8 +145,7 @@ document.addEventListener('DOMContentLoaded', function(event) {init();})
 
 var typeSelector = document.getElementById("elementTypeSelector");
 typeSelector.onchange = function(){
-	var elem = screenplay.activeElem;
-	elem.classList.replace(elem.classList[1], elemTypes[this.selectedIndex].name);
+	screenplay.activeElem.changeType(this.selectedIndex);
 }
 
 function createScriptObject(){

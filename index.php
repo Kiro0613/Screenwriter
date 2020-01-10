@@ -7,12 +7,12 @@
 
     <body>
 		<div id="contextMenu">
-			<span id="contextSlug">Slugline</span>
-			<span id="contextAction">Action</span>
-			<span id="contextDial">Dialogue</span>
-			<span id="contextParen">Parenthetical</span>
-			<span id="contextChar">Character</span>
-			<span id="contextTrans">Transparent</span>
+			<span id="contextSlug" onclick="changeType(0)">Slugline</span>
+			<span id="contextAction" onclick="changeType(1)">Action</span>
+			<span id="contextDial" onclick="changeType(2)">Dialogue</span>
+			<span id="contextParen" onclick="changeType(3)">Parenthetical</span>
+			<span id="contextChar" onclick="changeType(4)">Character</span>
+			<span id="contextTrans" onclick="changeType(5)">Transition</span>
 			<hr />
 			<span id="contextCut">Cut</span>
 			<span id="contextCopy">Copy</span>

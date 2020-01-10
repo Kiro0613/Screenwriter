@@ -63,6 +63,12 @@ function newScreenplayElem(type, text){
 		typeSelector.selectedIndex = this.elemType.index;
 	}
 	
+	newElem.changeType = function(newType){
+		this.elemType = elemTypes[newType];
+		this.classList.replace(this.classList[1], elemTypes[newType].name);
+		typeSelector.selectedIndex = this.elemType.index;
+	}
+	
 //	newElem.addEventListener('contextmenu', function(event) {
 //		event.preventDefault();
 //		contextMenu.style.left = event.clientX + "px";
