@@ -48,86 +48,17 @@ screenplay.clearAll = function(skipPrompt){
 	screenplay.addElement(0, false, "");
 }
 
-//Sorted by indentation
-elemTypes = [
-	{
-		name : "slug",
-		commonName : "SLUGLINE",
-		lineWidth : 59,
-		index : 0
-	}, {
-		name : "action",
-		commonName : "Action",
-		lineWidth : 59,
-		index : 1
-	}, {
-		name : "dial",
-		commonName : "Dialogue",
-		lineWidth : 32,
-		index : 2
-	}, {
-		name : "paren",
-		commonName : "(parenthetical)",
-		lineWidth : 20,
-		index : 3
-	}, {
-		name : "name",
-		commonName : "CHARACTER",
-		lineWidth : 32,
-		index : 4
-	}, {
-		name : "trans",
-		commonName : "TRANSITION:",
-		lineWidth : 15,
-		index : 5
-	}
-];
-
-function newScreenplayElem(type, text){
-    var newElem = document.createElement("SPAN");
-	newElem.elemType = type;
-	//newElem.contentEditable = elemsEditable;
-	newElem.classList.add("element");
-	newElem.classList.add(type.name);
-    newElem.innerHTML = (text == null ? type.commonName : text);
-	newElem.lines = [""];
-	
-	newElem.scriptIndex = function(){
-		for(i = 0; i < screenplay.childElementCount; i++){
-			if(screenplay.children[i] == this){return i;}
-		}
-	}
-	
-	newElem.shiftType = function(amount){
-		var newElemIndex = (this.elemType.index + amount) % 6;
-		if(newElemIndex == -1){
-			newElemIndex = 5;
-		}
-		
-		if(this.innerHTML == this.elemType.commonName){
-			this.innerHTML = elemTypes[newElemIndex].commonName;
-		}
-		
-		this.elemType = elemTypes[newElemIndex];
-		this.classList.replace(this.classList[1], elemTypes[newElemIndex].name);
-		typeSelector.selectedIndex = this.elemType.index;
-	}
-	newElem.addEventListener('contextmenu', function(event) {
-		event.preventDefault();
-		console.log("Test");
-		return false;
-	}, false);
-
-    return newElem;
-}
-
-screenplay.onkeydown = function(event){
+screenplay.findActiveElem = function(){
 	screenplay.activeElem = window.getSelection().anchorNode;
 	if(screenplay.activeElem.nodeType == 3){
 		screenplay.activeElem = screenplay.activeElem.parentNode;
 	}
 	
 	typeSelector.selectedIndex = screenplay.activeElem.elemType.index;
+}
+
+screenplay.onkeydown = function(event){
+	screenplay.findActiveElem();
 	
 	switch(event.key){
 		case "Tab" :
@@ -165,13 +96,33 @@ screenplay.onkeydown = function(event){
 }
 
 screenplay.onclick = function(){
-	screenplay.activeElem = window.getSelection().anchorNode;
-	if(screenplay.activeElem.nodeType == 3){
-		screenplay.activeElem = screenplay.activeElem.parentNode;
-	}
-	
-	typeSelector.selectedIndex = screenplay.activeElem.elemType.index;
+	screenplay.findActiveElem();
 }
+
+screenplay.addEventListener('contextmenu', function(event) {
+	event.preventDefault();
+	
+	screenplay.findActiveElem();
+	
+	var xOvershoot = contextMenu.offsetWidth - (window.innerWidth - 20 - event.clientX);
+	var yOvershoot = contextMenu.offsetHeight - (window.innerHeight - 20 - event.clientY);
+	
+	contextMenu.style.left = (event.pageX - 1 - (xOvershoot > 0 ? xOvershoot : 0)) + "px";
+	contextMenu.style.top = (event.pageY - 1 - (yOvershoot > 0 ? yOvershoot : 0)) + "px";
+	contextMenu.style.visibility = "visible";
+
+	return false;
+}, false);
+
+window.onclick = function(event){
+	contextMenu.style.visibility = "hidden";
+	console.log(event.target);
+}
+
+var main = document.getElementById("main");
+
+var contextMenu = document.getElementById("contextMenu");
+
 
 function init(){
 	var doFiller = false;
@@ -185,12 +136,6 @@ function init(){
 		screenplay.activeElem.innerHTML = "<br />";
 		optionsInit();
 	}
-}
-
-//Default Script Objects
-var barbalow = {
-	content : ["FADE IN:", "INT. BARBALOW CAFE - DAY", "Patrons chirp at one another and waiters bustle around carrying coffees and pastries. At one of the tables is JAMES, a Matrix-clad thirtysomething with slick-backed hair and a leather coat, pounding away on his laptop.", "WAITRESS", "(nervous)", "Excuse me, sir? Would you like anything?", "James turns to her and nods with a smug grin. He continues his typing with one hand.", "JAMES", "No, thanks. I'm cool. Say, why don't you get yourself a drink, on me? I should have the money in three, two...", "James's laptop beeps violently and a cash register noise is heard.", "JAMES (cont'd)", "And, done! There we go - I've hacked into the mainframe of the Trustworthy Pioneer Bank and transferred twenty million dollars straight from those corporate bigwigs' accounts into mine. It's okay to be impressed, baby.", "FADE TO:", "EXT. ALLEYWAY - SUNSET", "JAMES drives down the street. He parallel parks next to an abandoned warehouse with a sign reading \"WARNING: NO ILLEGAL ACTIVITY OCCURS HERE. PLEASE LOOK AWAY.\"", "James gets out of his car, fedora pulled low over his head. He walks into the alley and meets two other men, BROCKO and SHIVA.", "BROCKO", "Ya got the goods?"],
-	classes : [0,0,1,4,3,2,1,4,2,1,4,2,5,0,1,1,4,2]
 }
 
 document.addEventListener('DOMContentLoaded', function(event) {init();})
@@ -221,8 +166,6 @@ function writeFromScriptObject(scriptObj){
 	
 	//screenplay.fixChildrenHeight();
 }
-
-var main = document.getElementById("main");
 
 //Loading screenplays
 var loadForm = document.createElement("FORM");
