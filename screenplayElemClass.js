@@ -30,17 +30,25 @@ elemTypes = [
 		commonName : "TRANSITION:",
 		lineWidth : 15,
 		index : 5
-	}
+	},
+	["slug", "action", "dial", "paren", "name", "trans"]
 ];
 
 function newScreenplayElem(type, text){
     var newElem = document.createElement("SPAN");
-	newElem.elemType = type;
 	//newElem.contentEditable = elemsEditable;
-	newElem.classList.add("element");
 	newElem.classList.add(type.name);
     newElem.innerHTML = (text == null ? type.commonName : text);
 	newElem.lines = [""];
+	
+	newElem.elemType = function(typeFormat){
+		switch(typeFormat){
+			case "string":
+				return this.classList[0];
+			default:
+				return elemTypes[6].indexOf(this.classList[0]);
+		}
+	}
 	
 	newElem.scriptIndex = function(){
 		for(i = 0; i < screenplay.childElementCount; i++){
@@ -49,7 +57,7 @@ function newScreenplayElem(type, text){
 	}
 	
 	newElem.shiftType = function(amount){
-		var newElemIndex = (this.elemType.index + amount) % 6;
+		var newElemIndex = (this.elemType()+ amount) % 6;
 		if(newElemIndex == -1){
 			newElemIndex = 5;
 		}
@@ -58,15 +66,33 @@ function newScreenplayElem(type, text){
 			this.innerHTML = elemTypes[newElemIndex].commonName;
 		}
 		
-		this.elemType = elemTypes[newElemIndex];
-		this.classList.replace(this.classList[1], elemTypes[newElemIndex].name);
-		typeSelector.selectedIndex = this.elemType.index;
+		this.classList.replace(this.classList[0], elemTypes[newElemIndex].name);
+		typeSelector.selectedIndex = this.elemType();
 	}
 	
 	newElem.changeType = function(newType){
 		this.elemType = elemTypes[newType];
-		this.classList.replace(this.classList[1], elemTypes[newType].name);
-		typeSelector.selectedIndex = this.elemType.index;
+		this.classList.replace(this.classList[0], elemTypes[newType].name);
+		typeSelector.selectedIndex = this.elemType();
+	}
+	
+	newElem.posInScreenplay = function(){
+		for(i = 0; i < screenplay.childElementCount; i++){
+			if(this == screenplay.childNodes[i]){
+				return i;
+			}
+		}
+		
+		return -1;
+	}
+	
+	newElem.setCaretPos = function(index){
+		if(window.getSelection().rangeCount == 0){
+			return false;
+		}
+		
+		window.getSelection().getRangeAt(0).setStart(this.firstChild, index);
+		window.getSelection().getRangeAt(0).setEnd(this.firstChild, index);
 	}
 	
 //	newElem.addEventListener('contextmenu', function(event) {

@@ -1,1 +1,1 @@
-{"content":["FADE IN:","INT. SIMS ACADEMY","Liam explains his code to Mrs. Noles.","LIAM","And this is how it works.","She is amazing"],"classes":[0,0,0,4,2,0]}
+{"content":["FADE IN:","int. Winder-Barrow High school, Perry's class - day","Liam sits at the desk, writing a screenplay.","LIAM","So, this is how it works.","He begins to boringly ramble.","LIAM (cont'd)","You can press tab to change what type of element it is.","See?","<br>"],"classes":[0,0,1,4,2,1,4,2,1,0]}

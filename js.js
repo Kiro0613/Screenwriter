@@ -1,125 +1,3 @@
-var screenplay = document.getElementById("screenplay");
-
-screenplay.addElement = function(elemType, insert, text){
-	if(elemType == undefined){
-		elemType = 1;
-	}
-	
-	if(insert){
-		this.insertBefore(newScreenplayElem(elemTypes[elemType], text), this.activeElem.nextSibling);
-		this.activeElem = this.activeElem.nextSibling;
-//		this.activeElem.focus();
-		//this.activeElem.setSelectionRange(-1, 0)
-	} else {
-		this.appendChild(newScreenplayElem(elemTypes[elemType], text));
-		this.activeElem = this.lastChild;
-//		this.activeElem.focus();
-		//window.getSelection().collapseToEnd(this.activeElem);
-	}
-	
-	return this.activeElem;
-}
-
-screenplay.deleteLastElement = function(){
-	console.log(this.childElementCount);
-	if(this.childElementCount <= 1){
-		console.log("Did not delete: Cannot delete last element in script");
-	} else {
-		this.removeChild(this.lastElementChild);
-	}
-}
-
-screenplay.deleteAllElements = function(){
-	var n = this.childElementCount;
-	for(i = 0; i < n; i++){
-		this.removeChild(this.firstChild);
-	}
-}
-
-screenplay.clearAll = function(skipPrompt){
-	if(skipPrompt != true){
-		if(confirm("Are you sure you want to delete the whole script?") == false){
-			return;
-		}
-	}
-	screenplay.deleteAllElements();
-	
-	screenplay.addElement(0, false, "FADE IN:");
-	screenplay.addElement(0, false, "");
-}
-
-screenplay.findActiveElem = function(){
-	screenplay.activeElem = window.getSelection().anchorNode;
-	if(screenplay.activeElem.nodeType == 3){
-		screenplay.activeElem = screenplay.activeElem.parentNode;
-	}
-	
-	typeSelector.selectedIndex = screenplay.activeElem.elemType.index;
-}
-
-screenplay.onkeydown = function(event){
-	screenplay.findActiveElem();
-	
-	switch(event.key){
-		case "Tab" :
-			event.preventDefault();
-			screenplay.activeElem.shiftType(event.shiftKey ? -1 : 1);
-			break;
-		case "Enter" :
-			event.preventDefault();
-			var cutOff = screenplay.activeElem.innerHTML.slice(window.getSelection().anchorOffset);
-			if(cutOff == ""){
-				cutOff = "<br />";
-			}
-			
-			var leftover = screenplay.activeElem.innerHTML.slice(0, window.getSelection().anchorOffset);
-			if(leftover == ""){
-				leftover = "<br />";
-			}
-			
-			screenplay.activeElem.innerHTML = leftover;
-			screenplay.addElement(1, true);
-			screenplay.activeElem.innerHTML = cutOff;
-			window.getSelection().getRangeAt(0).setStart(screenplay.activeElem, 0)
-			break;
-		case "ArrowUp":
-			if(screenplay.activeElem.previousSibling == null){break;}
-			screenplay.activeElem = screenplay.activeElem.previousSibling;
-			typeSelector.selectedIndex = screenplay.activeElem.elemType.index;
-			break;
-		case "ArrowDown":
-			if(screenplay.activeElem.nextSibling == null){break;}
-			screenplay.activeElem = screenplay.activeElem.nextSibling;
-			typeSelector.selectedIndex = screenplay.activeElem.elemType.index;
-			break;
-	}
-}
-
-screenplay.onclick = function(){
-	screenplay.findActiveElem();
-}
-
-screenplay.addEventListener('contextmenu', function(event) {
-	event.preventDefault();
-	
-	screenplay.findActiveElem();
-	
-	var xOvershoot = contextMenu.offsetWidth - (window.innerWidth - 20 - event.clientX);
-	var yOvershoot = contextMenu.offsetHeight - (window.innerHeight - 20 - event.clientY);
-	
-	contextMenu.style.left = (event.pageX - 1 - (xOvershoot > 0 ? xOvershoot : 0)) + "px";
-	contextMenu.style.top = (event.pageY - 1 - (yOvershoot > 0 ? yOvershoot : 0)) + "px";
-	contextMenu.style.visibility = "visible";
-
-	return false;
-}, false);
-
-window.onclick = function(event){
-	if(event.target != contextMenu){
-		contextMenu.style.visibility = "hidden";
-	}
-}
-
 var main = document.getElementById("main");
 var contextMenu = document.getElementById("contextMenu");
 
@@ -128,7 +6,7 @@ function changeType(newType){
 }
 
 function init(){
-	var doFiller = false;
+	var doFiller = true;
 	
 	if(doFiller){
 		writeFromScriptObject(barbalow);
@@ -139,6 +17,8 @@ function init(){
 		screenplay.activeElem.innerHTML = "<br />";
 		optionsInit();
 	}
+	
+	undo.pushStack();
 }
 
 document.addEventListener('DOMContentLoaded', function(event) {init();})
@@ -148,11 +28,18 @@ typeSelector.onchange = function(){
 	screenplay.activeElem.changeType(this.selectedIndex);
 }
 
+/*
+	SAVE AND LOAD
+*/
+
 function createScriptObject(){
-	var obj = {content : [], classes : []};
+	var obj = {content : [], classes : [], activeElemIndex : 0, caretPos : 0};
+	obj.activeElemIndex = screenplay.activeElem.posInScreenplay();
+	obj.caretPos = window.getSelection().anchorOffset;
+	
 	for(i = 0; i < screenplay.childElementCount; i++){
 		obj.content[i] = screenplay.childNodes[i].innerHTML;
-		obj.classes[i] = screenplay.childNodes[i].elemType.index;
+		obj.classes[i] = screenplay.childNodes[i].elemType();
 	}
 	
 	return obj;
@@ -166,7 +53,18 @@ function writeFromScriptObject(scriptObj){
 		screenplay.activeElem.innerHTML = scriptObj.content[i];
 	}
 	
-	//screenplay.fixChildrenHeight();
+	if(scriptObj.activeElemIndex == undefined){
+		scriptObj.activeElemIndex = 0;
+	}
+	
+	screenplay.activeElem = screenplay.childNodes[scriptObj.activeElemIndex];
+	typeSelector.selectedIndex = screenplay.activeElem.elemType();
+	
+	if(scriptObj.caretPos == undefined){
+		scriptObj.caretPos = 0;
+	}
+	
+	screenplay.activeElem.setCaretPos(scriptObj.caretPos);
 }
 
 //Loading screenplays
@@ -258,15 +156,155 @@ function saveBlob(blob) {
     a.dispatchEvent(new MouseEvent('click'));
 }
 
+//PRINTING
+var printBox = document.getElementById("printBox");
+printBox.onclick = function(){
+	printInput.setAttribute("value", JSON.stringify(createScriptObject()));
+	var printFormData = new FormData(printForm);
+	
+	printForm.submit();
+}
 
+var printForm = document.getElementById("printForm");
+var printInput = document.getElementById("printInput");
 
+//Shortcut for window.getSelection().getRangeAt(0)
+function range(){
+	return window.getSelection().getRangeAt(0);
+}
 
+//Copy/Past Stuff
+var clipboard = {
+	cut : function(fromContext){
+		if(fromContext){
+			window.getSelection().removeAllRanges();
+			window.getSelection().addRange(clipboard.contextTemp);
+		}
+		
+		if(window.getSelection().isCollapsed){
+			return false;
+		}
+		
+		undo.pushStack();
+		
+		console.log(clipboard.contextTemp);
+		//fromContext tells if function was activated from context menu
+		//and 
+		
+		this.value = range().extractContents();
+		return this.value;
+	},
+	
+	copy : function(fromContext){
+		if(fromContext){
+			window.getSelection().removeAllRanges();
+			window.getSelection().addRange(clipboard.contextTemp);
+		}
+		
+		if(window.getSelection().isCollapsed){
+			return false;
+		}
+		
+		this.value = range().cloneContents();
+		return this.value;
+	},
+	
+	paste : function(fromContext){
+		undo.pushStack();
+		
+		if(fromContext){
+			window.getSelection().removeAllRanges();
+			window.getSelection().addRange(clipboard.contextTemp);
+		}
+		
+		range().deleteContents();
+		
+		var beforeCaret = screenplay.activeElem.innerHTML.slice(0, window.getSelection().anchorOffset);
+		if(beforeCaret == ""){
+			beforeCaret = "<br />";
+		}
 
+		var afterCaret = screenplay.activeElem.innerHTML.slice(window.getSelection().anchorOffset);
+		if(afterCaret == ""){
+			afterCaret = "<br />";
+		}
+		
+		if(this.value.childElementCount == 0){
+			screenplay.activeElem.innerHTML = beforeCaret + clipboard.value.textContent + afterCaret;
+			window.getSelection().collapse(screenplay.activeElem.firstChild, beforeCaret.length + clipboard.value.textContent.length);
+			return;
+		}
 
+		screenplay.activeElem.innerHTML = beforeCaret + this.value.children[0].innerHTML;
+//		screenplay.addElement(1, true);
+//		screenplay.insertBefore(this.value, screenplay.activeElem);
+		
+		for(i = 1; i < this.value.childElementCount; i++){
+			var type = this.value.children[i].classList[1];
+			var text = this.value.children[i].innerHTML;
+			screenplay.addElement(type, true, text);
+		}
+		
+		screenplay.activeElem.innerHTML += afterCaret;
+	},
+	contextTemp : undefined,
+	value : ""
+}
 
+document.addEventListener('contextmenu', function(event) {
+	clipboard.contextTemp = window.getSelection().getRangeAt(0);
+}, false);
 
+var undo = {
+	undo : function(){
+//		if(this.stack[this.stackPos+1] == undefined){
+//			return;
+//		}
+		
+		if(this.stackPos < (this.stack.length - 1)){
+			this.stackPos++;
+			writeFromScriptObject(this.stack[this.stackPos]);
+		}
+		
+//		console.log(this.stack.length);
+	},
+	redo : function(){
+		if(this.stackPos > 0){
+			this.stackPos--;
+			writeFromScriptObject(this.stack[this.stackPos]);
+		}
+		
+//		console.log(this.stack.length);
+	},
+	pushStack : function(){
+		var newState = createScriptObject();
+		if(newState != this.stack[this.stackPos]){
+			if(this.stackPos != -1){
+				this.clearStack();
+			}
+			this.stack.splice(0, 0, createScriptObject());
+		}
+		
+//		console.log(this.stack.length);
+	},
+	clearStack : function(){
+		this.stack = this.stack.slice(this.stackPos);
+		this.stackPos = -1;
+//		console.log("Stack cleared - new length " + this.stack.length);
+	},
+	stack : [],
+	stackPos : -1,	//pos -1 means not undo state
+	stackLimit : 100,
+	autosaveTimeLimit : 3000,
+	autosaveTimer : this.autosaveTimeLimit + 1
+}
 
-
+window.setInterval(function(){
+	undo.autosaveTimer++;
+	if(undo.autosaveTimer == undo.autosaveTimeLimit){
+		undo.pushStack();
+	}
+}, 1)
 
 
 

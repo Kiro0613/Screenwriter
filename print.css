@@ -1,0 +1,76 @@
+html{
+	width: 8.5in;
+}
+
+body{
+    display: flex;
+
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 12pt;
+	
+	margin: 0px;
+	width: 8.5in;
+}
+
+#screenplay{
+	display: flex;
+	flex-direction: column;
+	
+	width: 8.5in;
+	min-height: 11in;
+	height: auto;
+	padding-top: 1in;
+	padding-bottom: 1in;
+	background-color: #FFFFFF;
+	margin: auto;
+	margin-bottom: 24px;
+}
+
+#screenplay{
+}
+
+span{
+	display: inline;
+	hyphens: none;
+	white-space: pre-wrap;
+}
+
+.activeElem{
+	background-color: #faf8f0;
+}
+
+.slug{
+	padding-left: 1.5in;
+	padding-right: 1in;
+	padding-bottom: 12px;
+	text-transform: uppercase;
+}
+
+.action{
+	padding-left: 1.5in;
+	padding-right: 1in;
+	padding-bottom: 12px;
+}
+
+.dial{
+	padding-left: 2.9in;
+	padding-right: 2.3in;
+	padding-bottom: 12px;
+}
+
+.paren{
+	padding-left: 3.6in;
+	padding-right: 2.9in;
+}
+
+.name{
+	padding-left: 4.2in;
+	padding-right: 1in;
+}
+
+.trans{
+	padding-left: 6in;
+	padding-right: 1in;
+	padding-bottom: 12px;
+	text-transform: uppercase;
+}

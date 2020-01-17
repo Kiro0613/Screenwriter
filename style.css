@@ -138,13 +138,7 @@ textarea{
 #screenplay{
 }
 
-.element{
-	display: inline;
-	hyphens: none;
-	white-space: pre-wrap;
-}
-
-.element: focus{
+.activeElem{
 	background-color: #faf8f0;
 }
 

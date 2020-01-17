@@ -14,13 +14,13 @@
 			<span id="contextChar" onclick="changeType(4)">Character</span>
 			<span id="contextTrans" onclick="changeType(5)">Transition</span>
 			<hr />
-			<span id="contextCut">Cut</span>
-			<span id="contextCopy">Copy</span>
-			<span id="contextPaste">Paste</span>
+			<span id="contextCut" onclick="clipboard.cut(true);">Cut</span>
+			<span id="contextCopy" onclick="clipboard.copy(true);">Copy</span>
+			<span id="contextPaste" onclick="clipboard.paste(true);">Paste</span>
 		</div>
 		
 		<div id="main">
-			<h1>Screenwriter</h1>
+			<h1 id="header">Screenwriter</h1>
 			<div id="optionsWrapper" class="optionsWrapper">
 				<div id="options" class="options">
 					<div id="leftOptions" style="display: flex; flex-direction: row;">
@@ -50,14 +50,17 @@
 					</div>
 
 					<div id="rightOptions" style="display: flex; flex-direction: row; margin-right: 4px;">
-						<input id="saveBox" type="button" class="optionsButton" value="Save" onclick="" />
+						<input id="saveBox" type="button" class="optionsButton" value="Save"/>
 
 						<form id="loadForm" style="margin-bottom: 0px;">
 							<label for="loadBox" class="optionsButton">Load</label>
 							<input id="loadBox" type="file" class="optionsButton" name="loadBox" style="display:none;" />
 						</form>
-
-						<input id="printBox" type="button" class="optionsButton" value="Print" />
+						
+						<form id="printForm" target="_blank" action="print.php" method="post">
+							<input id="printBox" type="button" class="optionsButton" value="Print"/>
+							<input id="printInput" type="text" name="scriptObj" style="display:none" />
+						</form>
 					</div>
 				</div>
 
@@ -103,6 +106,7 @@
 	
 	<script src="defaultScreenplays.js"></script>
 	<script src="screenplayElemClass.js"></script>
+	<script src="screenplay.js"></script>
     <script src="js.js"></script>
     <script src="styleScripts.js"></script>
 	
