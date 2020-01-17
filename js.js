@@ -19,8 +19,6 @@ function init(){
 	}
 	
 	undo.pushStack();
-	
-	docInit();
 }
 
 document.addEventListener('DOMContentLoaded', function(event) {init();})
@@ -315,16 +313,7 @@ var elemMargins = [
 	{l : 3.6, r : 2.9, w : 2.5},
 	{l : 4.2, r : 1, w : 4},
 	{l : 6, r : 1, w : 2}
-]
+];
 
-var doc = new jsPDF("p", "in", "letter");
 
-function docInit(){
-	doc.setFont("courier");
-	doc.setFontSize(12);
-}
-
-function print(){
-	
-}
 
