@@ -19,6 +19,8 @@ function init(){
 	}
 	
 	undo.pushStack();
+	
+	docInit();
 }
 
 document.addEventListener('DOMContentLoaded', function(event) {init();})
@@ -306,5 +308,23 @@ window.setInterval(function(){
 	}
 }, 1)
 
+var elemMargins = [
+	{l : 1.5, r : 1, w : 6},
+	{l : 1.5, r : 1, w : 6},
+	{l : 2.9, r : 2.3, w : 3.5},
+	{l : 3.6, r : 2.9, w : 2.5},
+	{l : 4.2, r : 1, w : 4},
+	{l : 6, r : 1, w : 2}
+]
 
+var doc = new jsPDF("p", "in", "letter");
+
+function docInit(){
+	doc.setFont("courier");
+	doc.setFontSize(12);
+}
+
+function print(){
+	
+}
 
