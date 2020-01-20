@@ -103,14 +103,12 @@
 			<div id="screenplay" contenteditable="true"></div>
 		</div>
     </body>
-	
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-	<script src="xepOnline.jqPlugin.js"></script>
+
+	<script src="pdfmake/pdfmake.min.js"></script>
+	<script src="pdfmake/vfs_fonts.js"></script>
 	<script src="defaultScreenplays.js"></script>
 	<script src="screenplayElemClass.js"></script>
 	<script src="screenplay.js"></script>
-    <script src="js.js"></script>
-    <script src="styleScripts.js"></script>
-	
-	
+	<script src="js.js"></script>
+	<script src="styleScripts.js"></script>
 </html>
