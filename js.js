@@ -306,6 +306,7 @@ window.setInterval(function(){
 	}
 }, 1)
 
+//Values in inches; Multiply by 72 for pt
 var elemMargins = [
 	{l : 1.5, r : 1, w : 6},
 	{l : 1.5, r : 1, w : 6},
