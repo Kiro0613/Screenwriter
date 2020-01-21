@@ -94,7 +94,7 @@
 							<td><input type="number" class="optionNum" id="parenPR" />in.</td>
 							<td><input type="number" class="optionNum" id="charPR" />in.</td>
 							<td><input type="number" class="optionNum" id="transPR" />in.</td>
-							<td>Lock? <input type="checkbox"></td>
+							<td>Lock? <input type="checkbox" /></td>
 						</tr>
 					</table>
 				</div>
