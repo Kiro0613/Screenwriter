@@ -78,22 +78,22 @@
 						</tr>
 						<tr id="leftPadOptions">
 							<td>Left Margin</td>
-							<td><input type="number" class="optionNum" id="slugPL">in.</td>
-							<td><input type="number" class="optionNum" id="actPL">in.</td>
-							<td><input type="number" class="optionNum" id="dialPL">in.</td>
-							<td><input type="number" class="optionNum" id="parenPL">in.</td>
-							<td><input type="number" class="optionNum" id="charPL">in.</td>
-							<td><input type="number" class="optionNum" id="transPL">in.</td>
+							<td><input type="number" class="optionNum" id="slugPL" />in.</td>
+							<td><input type="number" class="optionNum" id="actPL" />in.</td>
+							<td><input type="number" class="optionNum" id="dialPL" />in.</td>
+							<td><input type="number" class="optionNum" id="parenPL" />in.</td>
+							<td><input type="number" class="optionNum" id="charPL" />in.</td>
+							<td><input type="number" class="optionNum" id="transPL" />in.</td>
 							<td>Lock? <input type="checkbox"></td>
 						</tr>
 						<tr id="rightPadOptions">
 							<td>Right Margin</td>
-							<td><input type="number" class="optionNum" id="slugPR">in.</td>
-							<td><input type="number" class="optionNum" id="actPR">in.</td>
-							<td><input type="number" class="optionNum" id="dialPR">in.</td>
-							<td><input type="number" class="optionNum" id="parenPR">in.</td>
-							<td><input type="number" class="optionNum" id="charPR">in.</td>
-							<td><input type="number" class="optionNum" id="transPR">in.</td>
+							<td><input type="number" class="optionNum" id="slugPR" />in.</td>
+							<td><input type="number" class="optionNum" id="actPR" />in.</td>
+							<td><input type="number" class="optionNum" id="dialPR" />in.</td>
+							<td><input type="number" class="optionNum" id="parenPR" />in.</td>
+							<td><input type="number" class="optionNum" id="charPR" />in.</td>
+							<td><input type="number" class="optionNum" id="transPR" />in.</td>
 							<td>Lock? <input type="checkbox"></td>
 						</tr>
 					</table>
