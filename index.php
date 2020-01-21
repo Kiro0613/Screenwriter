@@ -84,7 +84,7 @@
 							<td><input type="number" class="optionNum" id="parenPL" />in.</td>
 							<td><input type="number" class="optionNum" id="charPL" />in.</td>
 							<td><input type="number" class="optionNum" id="transPL" />in.</td>
-							<td>Lock? <input type="checkbox"></td>
+							<td>Lock? <input type="checkbox" /></td>
 						</tr>
 						<tr id="rightPadOptions">
 							<td>Right Margin</td>
