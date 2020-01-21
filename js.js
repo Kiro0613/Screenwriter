@@ -9,7 +9,7 @@ function init(){
 	var doFiller = true;
 	
 	if(doFiller){
-		writeFromScriptObject(barbalow);
+		writeFromScriptObject(barbalowExt);
 	} else {
 		screenplay.addElement(0);
 		screenplay.activeElem.innerHTML = "FADE IN:";
@@ -159,10 +159,12 @@ function saveBlob(blob) {
 //PRINTING
 var printBox = document.getElementById("printBox");
 printBox.onclick = function(){
-	printInput.setAttribute("value", JSON.stringify(createScriptObject()));
-	var printFormData = new FormData(printForm);
-	
-	printForm.submit();
+//	printInput.setAttribute("value", JSON.stringify(createScriptObject()));
+//	var printFormData = new FormData(printForm);
+//	
+//	printForm.submit();
+	writePdf();
+	openPdf();
 }
 
 var printForm = document.getElementById("printForm");
@@ -315,6 +317,75 @@ var elemMargins = [
 	{l : 4.2, r : 1, w : 4},
 	{l : 6, r : 1, w : 2}
 ];
+
+pdfMake.fonts = {
+   Courier: {
+     normal: 'cour.ttf',
+   }
+}
+
+var pdf = {
+	content : [],
+	styles : {
+		slug : {
+			margin : [elemMargins[0].l * 72, 0, elemMargins[0].r * 72, 12]
+		},
+		action : {
+			margin : [elemMargins[1].l * 72, 0, elemMargins[1].r * 72, 12]
+		},
+		dial : {
+			margin : [elemMargins[2].l * 72, 0, elemMargins[2].r * 72, 12]
+		},
+		paren : {
+			margin : [elemMargins[3].l * 72, 0, elemMargins[3].r * 72, 0]
+		},
+		name : {
+			margin : [elemMargins[4].l * 72, 0, elemMargins[4].r * 72, 0]
+		},
+		trans : {
+			margin : [elemMargins[5].l * 72, 0, elemMargins[5].r * 72, 12]
+		},
+	},
+	defaultStyle : {
+		font : 'Courier',
+		fontSize : 12
+	},
+	pageSize : "LETTER",
+	pageMargins : [0, 72, 0, 72],
+	pageBreakBefore: function(currentNode, followingNodesOnPage, nodesOnNextPage, previousNodesOnPage) {
+		return (currentNode.style == "name" || currentNode.style == "paren") && followingNodesOnPage.length === 0;
+	},
+	header: function(currentPage, pageCount, pageSize) {
+		return[{
+			text : (currentPage > 1 ? (currentPage - 1) + "." : ""),
+			absolutePosition : {x : 7.5*72 - 12, y : 36}
+//			style : {
+//				margin : [0, 60, 72, 0]
+//			}
+		}]
+	}
+}
+
+function writePdf(){
+	pdf.content = [];
+	
+	for(i = 0; i < screenplay.childElementCount; i++){
+		var pdfElem = {
+			text : screenplay.childNodes[i].innerHTML,
+			style : screenplay.childNodes[i].classList[0]
+		};
+		pdf.content.push(pdfElem);
+	}
+}
+
+function savePdf(){
+	pdfMake.createPdf(pdf).download();
+}
+
+function openPdf(){
+	pdfMake.createPdf(pdf).open();
+}
+
 
 
 

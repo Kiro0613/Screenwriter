@@ -99,7 +99,12 @@
 					</table>
 				</div>
 			</div>
-
+			
+			<div id="titleContainer">
+				<span id="title" contenteditable="true" class="title">Title</span>
+				by
+				<span id="author" contenteditable="true" class="title">Author</span>
+			</div>
 			<div id="screenplay" contenteditable="true"></div>
 		</div>
     </body>
