@@ -123,24 +123,6 @@ screenplay.onkeydown = function(event){
 			screenplay.activeElem = screenplay.activeElem.nextSibling;
 			typeSelector.selectedIndex = screenplay.activeElem.elemType();
 			break;
-		case "KeyX":
-			if(event.ctrlKey){
-				event.preventDefault();
-				clipboard.cut();
-			}
-			break;
-		case "KeyC":
-			if(event.ctrlKey){
-				event.preventDefault();
-				clipboard.copy();
-			}
-			break;
-		case "KeyV":
-			if(event.ctrlKey){
-				event.preventDefault();
-				clipboard.paste();
-			}
-			break;
 		case "KeyZ":
 			if(event.ctrlKey){
 				event.preventDefault();
@@ -154,6 +136,22 @@ screenplay.onkeydown = function(event){
 			}
 			break;
 	}
+}
+
+screenplay.oncut = function(event){
+	event.preventDefault();
+	clipboard.cut();
+}
+
+screenplay.oncopy = function(event){
+	event.preventDefault();
+	console.log(event.clipboardData);
+	clipboard.copy(false, event);
+}
+
+screenplay.onpaste = function(event){
+	event.preventDefault();
+	clipboard.paste();
 }
 
 screenplay.onclick = function(){

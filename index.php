@@ -13,7 +13,7 @@
 			<span id="contextParen" onclick="changeType(3)">Parenthetical</span>
 			<span id="contextChar" onclick="changeType(4)">Character</span>
 			<span id="contextTrans" onclick="changeType(5)">Transition</span>
-			<hr />
+			<hr id="contextHr" />
 			<span id="contextCut" onclick="clipboard.cut(true);">Cut</span>
 			<span id="contextCopy" onclick="clipboard.copy(true);">Copy</span>
 			<span id="contextPaste" onclick="clipboard.paste(true);">Paste</span>
@@ -52,9 +52,9 @@
 					<div id="rightOptions" style="display: flex; flex-direction: row; margin-right: 4px;">
 						<input id="saveBox" type="button" class="optionsButton" value="Save"/>
 
-						<form id="loadForm" style="margin-bottom: 0px;">
-							<label for="loadBox" class="optionsButton">Load</label>
-							<input id="loadBox" type="file" class="optionsButton" name="loadBox" style="display:none;" />
+						<form id="loadForm" style="margin-bottom: 0px;" enctype="multipart/form-data" method="post">
+							<label for="loadInput" class="optionsButton">Load</label>
+							<input id="loadInput" type="file" class="optionsButton" name="scriptFile" style="display:none;" />
 						</form>
 						
 						<form id="printForm" target="_blank" action="print.php" method="post">
@@ -105,7 +105,7 @@
 				by
 				<span id="author" contenteditable="true" class="title">Author</span>
 			</div>
-			<div id="screenplay" contenteditable="true"></div>
+			<div id="screenplay" contenteditable="true" draggable="false"></div>
 		</div>
     </body>
 

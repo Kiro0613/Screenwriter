@@ -95,6 +95,10 @@ function newScreenplayElem(type, text){
 		window.getSelection().getRangeAt(0).setEnd(this.firstChild, index);
 	}
 	
+	newElem.addEventListener("dragstart", function(e){
+		e.preventDefault();
+	});
+	
 //	newElem.addEventListener('contextmenu', function(event) {
 //		event.preventDefault();
 //		contextMenu.style.left = event.clientX + "px";

@@ -5,8 +5,10 @@ function changeType(newType){
 	screenplay.activeElem.changeType(newType);
 }
 
+var doFiller = true;
+var clipboardDisabled = false;
+
 function init(){
-	var doFiller = true;
 	
 	if(doFiller){
 		writeFromScriptObject(barbalowExt);
@@ -19,6 +21,13 @@ function init(){
 	}
 	
 	undo.pushStack();
+	
+	if(clipboardDisabled == false){
+		document.getElementById("contextHr").style.display = "none";
+		document.getElementById("contextCut").style.display = "none";
+		document.getElementById("contextCopy").style.display = "none";
+		document.getElementById("contextPaste").style.display = "none";
+	}
 }
 
 document.addEventListener('DOMContentLoaded', function(event) {init();})
@@ -33,9 +42,19 @@ typeSelector.onchange = function(){
 */
 
 function createScriptObject(){
-	var obj = {content : [], classes : [], activeElemIndex : 0, caretPos : 0};
+	var obj = {
+		content : [],
+		classes : [],
+		activeElemIndex : 0,
+		caretPos : 0,
+		title : "",
+		author : ""
+	};
+	
 	obj.activeElemIndex = screenplay.activeElem.posInScreenplay();
 	obj.caretPos = window.getSelection().anchorOffset;
+	obj.title = document.getElementById("title").innerHTML;
+	obj.author = document.getElementById("author").innerHTML;
 	
 	for(i = 0; i < screenplay.childElementCount; i++){
 		obj.content[i] = screenplay.childNodes[i].innerHTML;
@@ -53,41 +72,39 @@ function writeFromScriptObject(scriptObj){
 		screenplay.activeElem.innerHTML = scriptObj.content[i];
 	}
 	
+	//Initializing potentially uninitialized values
 	if(scriptObj.activeElemIndex == undefined){
 		scriptObj.activeElemIndex = 0;
 	}
-	
-	screenplay.activeElem = screenplay.childNodes[scriptObj.activeElemIndex];
-	typeSelector.selectedIndex = screenplay.activeElem.elemType();
 	
 	if(scriptObj.caretPos == undefined){
 		scriptObj.caretPos = 0;
 	}
 	
+	if(scriptObj.title == undefined){
+		scriptObj.title = "Title"
+	}
+	
+	if(scriptObj.author == undefined){
+		scriptObj.author = "Author"
+	}
+	//Done initing!
+	
+	screenplay.activeElem = screenplay.childNodes[scriptObj.activeElemIndex];
+	
+	typeSelector.selectedIndex = screenplay.activeElem.elemType();
 	screenplay.activeElem.setCaretPos(scriptObj.caretPos);
+	
+	document.getElementById("title").innerHTML = scriptObj.title;
+	document.getElementById("author").innerHTML = scriptObj.author;
 }
 
 //Loading screenplays
-var loadForm = document.createElement("FORM");
-loadForm.setAttribute("enctype", "multipart/form-data");
-loadForm.setAttribute("method", "post");
-var loadInput = document.createElement("INPUT");
-loadInput.setAttribute("id", "loadInput");
-loadInput.setAttribute("type", "file");
-loadInput.setAttribute("name", "scriptFile");
-loadInput.style.display = "none";
+var loadForm = document.getElementById("loadForm");
+var loadInput = document.getElementById("loadInput");
 loadInput.onchange = function(){
-	//document.getElementById("loadForm").submit();
 	loadFile();
 };
-var loadLabel = document.createElement("LABEL");
-loadLabel.setAttribute("for", "loadInput");
-loadLabel.setAttribute("class", "optionsButton");
-loadLabel.innerHTML = "Load";
-loadForm.appendChild(loadLabel);
-loadForm.appendChild(loadInput);
-
-document.getElementById("rightOptions").replaceChild(loadForm, document.getElementById("rightOptions").childNodes[3]);
 
 function loadFile() {
 	var file = loadInput.files[0];
@@ -152,7 +169,7 @@ function saveFile(){
 function saveBlob(blob) {
     var a = document.createElement('a');
     a.href = window.URL.createObjectURL(blob);
-    a.download = "script.txt";
+    a.download = document.getElementById("title").innerHTML + ".txt";
     a.dispatchEvent(new MouseEvent('click'));
 }
 
@@ -178,6 +195,8 @@ function range(){
 //Copy/Past Stuff
 var clipboard = {
 	cut : function(fromContext){
+		if(clipboardDisabled){return;}
+		
 		if(fromContext){
 			window.getSelection().removeAllRanges();
 			window.getSelection().addRange(clipboard.contextTemp);
@@ -197,7 +216,11 @@ var clipboard = {
 		return this.value;
 	},
 	
-	copy : function(fromContext){
+	copy : function(fromContext, event){
+		if(clipboardDisabled){return;}
+		
+		test = event.clipboardData;
+		
 		if(fromContext){
 			window.getSelection().removeAllRanges();
 			window.getSelection().addRange(clipboard.contextTemp);
@@ -212,6 +235,8 @@ var clipboard = {
 	},
 	
 	paste : function(fromContext){
+		if(clipboardDisabled){return;}
+		
 		undo.pushStack();
 		
 		if(fromContext){
@@ -252,6 +277,8 @@ var clipboard = {
 	contextTemp : undefined,
 	value : ""
 }
+
+var test;
 
 document.addEventListener('contextmenu', function(event) {
 	clipboard.contextTemp = window.getSelection().getRangeAt(0);
@@ -345,6 +372,10 @@ var pdf = {
 		trans : {
 			margin : [elemMargins[5].l * 72, 0, elemMargins[5].r * 72, 12]
 		},
+		title : {
+			margin : [1.5*72, 12*16, 72, 0],
+			alignment : 'center'
+		}
 	},
 	defaultStyle : {
 		font : 'Courier',
@@ -357,11 +388,8 @@ var pdf = {
 	},
 	header: function(currentPage, pageCount, pageSize) {
 		return[{
-			text : (currentPage > 1 ? (currentPage - 1) + "." : ""),
+			text : (currentPage > 2 ? (currentPage - 1) + "." : ""),
 			absolutePosition : {x : 7.5*72 - 12, y : 36}
-//			style : {
-//				margin : [0, 60, 72, 0]
-//			}
 		}]
 	}
 }
@@ -369,11 +397,22 @@ var pdf = {
 function writePdf(){
 	pdf.content = [];
 	
+	pdf.content.push({
+		text : document.getElementById("title").innerHTML + "\n\nby\n\n" + document.getElementById("author").innerHTML,
+		style : 'title',
+		pageBreak : 'after'
+	});
+	
 	for(i = 0; i < screenplay.childElementCount; i++){
 		var pdfElem = {
 			text : screenplay.childNodes[i].innerHTML,
 			style : screenplay.childNodes[i].classList[0]
 		};
+		
+		if(pdfElem.style == "slug" || pdfElem.style == "trans"){
+			pdfElem.text = pdfElem.text.toUpperCase();
+		}
+		
 		pdf.content.push(pdfElem);
 	}
 }

@@ -115,6 +115,10 @@ body{
     background-color: #D0D0D0;
 }
 
+.contextClipboard{
+	display: none;
+}
+
 .optionNum{
 	width: 24px;
 }
