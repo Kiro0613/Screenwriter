@@ -109,6 +109,7 @@
 		</div>
     </body>
 
+	<script src="ckeditor/ckeditor.js"></script>
 	<script src="pdfmake/pdfmake.min.js"></script>
 	<script src="pdfmake/vfs_fonts.js"></script>
 	<script src="defaultScreenplays.js"></script>
