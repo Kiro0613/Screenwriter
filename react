@@ -1,0 +1,132 @@
+import React, { Component } from 'react';
+import { AppRegistry, Text, View, StyleSheet, TouchableHighlight, TextInput } from 'react-native';
+import Constants from 'expo-constants';
+
+export default class App extends Component {
+	state = {
+		teamA: 'Team 1',
+		teamB: 'Team 2',
+		teamAScore: 0,
+		teamBScore: 0
+	}
+	
+    render() {
+        return (
+            <View style={styles.container}>
+                <View style={styles.header}>Stupid Game Thing</View>
+                
+                <View style={styles.counterWrapper}>
+                    <View style={styles.counterSection}>
+                        <View style={styles.counterNum}>{this.state.teamAScore}</View>
+						<TouchableHighlight 
+							onPress={() => {
+								this.setState({
+									teamAScore: this.state.teamAScore + 1
+								})
+								
+								alert('Added 1 to ' + this.state.teamA + '\'s score');
+							}}
+						>
+							<View style={styles.counterButton}>
+								<Text>Add point to<br/>{this.state.teamA}</Text>
+							</View>
+						</TouchableHighlight>
+                    </View>
+                    
+                    <View style={styles.counterSection}>
+                        <View style={styles.counterNum}>{this.state.teamBScore}</View>
+						<TouchableHighlight 
+							onPress={() => { 
+								this.setState({
+									teamBScore: this.state.teamBScore + 1
+								})
+								
+								alert('Added 1 to ' + this.state.teamB + '\'s score');
+							}}
+						>
+							<View style={styles.counterButton}>
+								<Text>Add point to<br/>{this.state.teamB}</Text>
+							</View>
+						</TouchableHighlight>
+                    </View>
+                </View>
+				
+				<View>
+					<View style={styles.teamWrapper}>
+						<Text>Team 1: </Text>
+						<TextInput
+							style={styles.teamName}
+							onChangeText={(teamA) => this.setState({teamA})}
+			                value={this.state.teamA}
+						></TextInput>
+					</View>
+					
+					<View style={styles.teamWrapper}>
+						<Text>Team 2: </Text>
+						<TextInput
+							style={styles.teamName}
+							onChangeText={(teamB) => this.setState({teamB})}
+			                value={this.state.teamB}
+						></TextInput>
+					</View>
+				</View>
+                
+                <Text style={styles.text}>Woohoo. Sports.</Text>
+            </View>
+        );
+    }
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#daeff0',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    header:{
+        fontSize: 15,
+        textAlign: 'center',
+        backgroundColor: '#FAFAFA',
+        width: '100%',
+        padding: 6
+    },
+    counterWrapper:{
+        flexDirection: 'row'
+    },
+    counterSection:{
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 1
+    },
+    counterNum:{
+        fontSize: 18,
+        fontWeight: 'bold',
+        paddingTop: 6,
+        paddingBottom: 6,
+        backgroundColor: '#FFFFFF',
+        width: '100%',
+        textAlign: 'center'
+    },
+    counterButton:{
+        backgroundColor: '#800000',
+        color: '#FFFFFF',
+        textAlign: 'center',
+        padding: 8
+    },
+    text:{
+        fontSize: 14,
+        fontColor: '#000000',
+        textAlign: 'center',
+        margin: 4
+    },
+	teamWrapper:{
+		flexDirection: 'row'
+	},
+	teamName:{
+		borderWidth: 1,
+		backgroundColor: '#FFFFFF'
+	}
+});
