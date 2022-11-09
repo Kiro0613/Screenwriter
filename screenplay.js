@@ -56,18 +56,6 @@ screenplay.deleteAllElements = function(){
 	}
 }
 
-screenplay.clearAll = function(skipPrompt){
-	if(skipPrompt != true){
-		if(confirm("Are you sure you want to delete the whole script?") == false){
-			return;
-		}
-	}
-	screenplay.deleteAllElements();
-	
-	screenplay.addElement(0, false, "FADE IN:");
-	screenplay.addElement(0, false, "");
-}
-
 screenplay.findActiveElem = function(){
 	screenplay.activeElem = window.getSelection().anchorNode;
 	if(screenplay.activeElem.nodeType == 3){
@@ -80,8 +68,6 @@ screenplay.findActiveElem = function(){
 		typeSelector.selectedIndex = 0;
 	}
 }
-
-screenplay.onchange = function(){console.log("Test")}
 
 screenplay.onkeydown = function(event){
 	undo.autosaveTimer = 0;

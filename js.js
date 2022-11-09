@@ -9,9 +9,8 @@ var doFiller = true;
 var clipboardDisabled = false;
 
 function init(){
-	
 	if(doFiller){
-		writeFromScriptObject(barbalowExt);
+		writeFromScriptObject(barbalow);
 	} else {
 		screenplay.addElement(0);
 		screenplay.activeElem.innerHTML = "FADE IN:";
@@ -35,6 +34,22 @@ document.addEventListener('DOMContentLoaded', function(event) {init();})
 var typeSelector = document.getElementById("elementTypeSelector");
 typeSelector.onchange = function(){
 	screenplay.activeElem.changeType(this.selectedIndex);
+    //screenplay.activeElem.replaceWith(newScreenplayElem(elemTypes[document.getElementById("elementTypeSelector").selectedIndex], screenplay.activeElem.innerHTML));
+}
+
+function clearScript(skipPrompt){
+	if(skipPrompt != true){
+		if(confirm("Are you sure you want to delete the whole script?") == false){
+			return;
+		}
+	}
+    
+	document.getElementById("title").innerHTML = "Title";
+	document.getElementById("author").innerHTML = "Author";
+    
+	screenplay.deleteAllElements();
+	screenplay.addElement(0, false, "FADE IN:");
+	screenplay.addElement(0, false, "");
 }
 
 /*
@@ -92,11 +107,11 @@ function writeFromScriptObject(scriptObj){
 	
 	screenplay.activeElem = screenplay.childNodes[scriptObj.activeElemIndex];
 	
-	typeSelector.selectedIndex = screenplay.activeElem.elemType();
-	screenplay.activeElem.setCaretPos(scriptObj.caretPos);
-	
 	document.getElementById("title").innerHTML = scriptObj.title;
 	document.getElementById("author").innerHTML = scriptObj.author;
+	
+	typeSelector.selectedIndex = screenplay.activeElem.elemType();
+	screenplay.activeElem.setCaretPos(scriptObj.caretPos);
 }
 
 //Loading screenplays
@@ -149,28 +164,41 @@ saveInput.setAttribute("type", "text");
 saveInput.setAttribute("name", "txt");
 saveForm.appendChild(saveInput);
 
-function saveFile(){
-	saveInput.setAttribute("value", JSON.stringify(createScriptObject()));
-	var saveFormData = new FormData(saveForm);
-	
-	var xhttp = new XMLHttpRequest();
-	xhttp.responseType = "blob";
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && (this.status == 200 || this.status == 0)) {
-			var x = this.response;
-			
-			saveBlob(x, "Testing Blobbles.txt");
-		}
-	};
-	xhttp.open("POST", "saveScreenplay.php", true);
-	xhttp.send(saveFormData);
-}
+//function saveFile(){
+//	saveInput.setAttribute("value", JSON.stringify(createScriptObject()));
+//	var saveFormData = new FormData(saveForm);
+//	
+//	var xhttp = new XMLHttpRequest();
+//	xhttp.responseType = "blob";
+//	xhttp.onreadystatechange = function() {
+//		if (this.readyState == 4 && (this.status == 200 || this.status == 0)) {
+//			var x = this.response;
+//			
+//			saveBlob(x, "Testing Blobbles.txt");
+//		}
+//	};
+//	xhttp.open("POST", "saveScreenplay.php", true);
+//	xhttp.send(saveFormData);
+//}
+//
+//function saveBlob(blob) {
+//    var a = document.createElement('a');
+//    a.href = window.URL.createObjectURL(blob);
+//    a.download = document.getElementById("title").innerHTML + ".json";
+//    a.dispatchEvent(new MouseEvent('click'));
+//}
 
-function saveBlob(blob) {
-    var a = document.createElement('a');
-    a.href = window.URL.createObjectURL(blob);
-    a.download = document.getElementById("title").innerHTML + ".txt";
-    a.dispatchEvent(new MouseEvent('click'));
+function saveFile(){
+    var scriptString = JSON.stringify(createScriptObject());
+    
+    var bytes = new Array(scriptString.length);
+    for (var i = 0; i < scriptString.length; i++) {
+    bytes[i] = scriptString.charCodeAt(i);
+    }
+
+    var blob = new Blob([new Uint8Array(bytes)]);
+    
+    saveAs(blob, document.getElementById("title").innerHTML + ".json");
 }
 
 //PRINTING

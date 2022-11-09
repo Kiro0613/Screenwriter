@@ -23,6 +23,7 @@ body{
 	width: 8.5in;
 	height: auto;
 	padding: 24px 0px;
+	margin: auto;
 	background-color: #FFFFFF;
 	border-bottom: 1px solid #505050;
 }
@@ -62,6 +63,8 @@ body{
 	margin: auto;
     align-items: center;
 	justify-content: space-between;
+    padding: 4px;
+    box-sizing: border-box;
 }
 
 .option{

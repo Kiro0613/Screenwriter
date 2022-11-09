@@ -24,15 +24,9 @@
 			<div id="optionsWrapper" class="optionsWrapper">
 				<div id="options" class="options">
 					<div id="leftOptions" style="display: flex; flex-direction: row;">
-						<span id="fontSizePicker" class="option tooltip">
-							<h4>Font Size</h4>
-							<input type="number" min="1" max="216" value="12" />
-							<span class="tooltiptext">A screenplay should always 12pt font. Use only because of screen size or eyesight!</span>
-						</span>
-
 						<button onclick="screenplay.addElement();" class="optionsButton">Add<br/>Row</button>
 
-						<button onclick="screenplay.deleteLastElement();" class="optionsButton">Remove<br/>Row</button>
+						<button onclick="screenplay.deleteLastElement();" class="optionsButton">Remove<br/>Last Row</button>
 
 						<span id="elementPicker" class="option">
 							<h4>Element</h4>
@@ -46,10 +40,10 @@
 							</select>
 						</span>
 
-						<button onclick="screenplay.clearAll();" class="optionsButton">Clear<br/>Script</button>
+						<button onclick="clearScript();" class="optionsButton">Clear<br/>Script</button>
 					</div>
 
-					<div id="rightOptions" style="display: flex; flex-direction: row; margin-right: 4px;">
+					<div id="rightOptions" style="display: flex; flex-direction: row;">
 						<input id="saveBox" type="button" class="optionsButton" value="Save"/>
 
 						<form id="loadForm" style="margin-bottom: 0px;" enctype="multipart/form-data" method="post">
@@ -109,8 +103,10 @@
 		</div>
     </body>
 
+	<!-- <script src="ckeditor/ckeditor.js"></script> -->
 	<script src="pdfmake/pdfmake.min.js"></script>
 	<script src="pdfmake/vfs_fonts.js"></script>
+    <script src="FileSaver.js"></script>
 	<script src="defaultScreenplays.js"></script>
 	<script src="screenplayElemClass.js"></script>
 	<script src="screenplay.js"></script>

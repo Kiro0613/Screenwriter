@@ -57,7 +57,7 @@ function newScreenplayElem(type, text){
 	}
 	
 	newElem.shiftType = function(amount){
-		var newElemIndex = (this.elemType()+ amount) % 6;
+		var newElemIndex = (this.elemType() + amount) % 6;
 		if(newElemIndex == -1){
 			newElemIndex = 5;
 		}
@@ -71,7 +71,7 @@ function newScreenplayElem(type, text){
 	}
 	
 	newElem.changeType = function(newType){
-		this.elemType = elemTypes[newType];
+		//this.elemType = elemTypes[newType];
 		this.classList.replace(this.classList[0], elemTypes[newType].name);
 		typeSelector.selectedIndex = this.elemType();
 	}
